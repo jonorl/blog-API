@@ -83,6 +83,20 @@ async function deleteUser(userID) {
   return deleteUser
 }
 
+async function getAllPosts() {
+  const getPosts = await prisma.posts.findMany();
+  return getPosts;
+}
+
+async function readPost(id){
+  const result = await prisma.posts.findUnique({
+    where: {
+      post_id: parseInt(id),
+    },
+  });
+  return result;
+}
+
 module.exports = {
   insertNewUser,
   readUser,
@@ -92,4 +106,6 @@ module.exports = {
   getAllUsers,
   updateUser,
   deleteUser,
+  getAllPosts,
+  readPost,
 };

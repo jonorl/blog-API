@@ -11,8 +11,7 @@ const app = express();
 
 // Get all users
 app.get("/api/v1/users", async (req, res) => {
-  const getUsersPromise = db.getAllUsers();
-  const getUsers = await getUsersPromise;
+  const getUsers = await db.getAllUsers();
   res.json({ message: "List of all users: ", getUsers });
 });
 
@@ -51,40 +50,52 @@ app.delete("/api/v1/users/:id", async (req, res) => {
 });
 
 // Post Routes
+
+// Get all posts
 app.get("/api/v1/posts", async (req, res) => {
-  /* Get all posts */
+  const getPosts = await db.getAllPosts();
+  res.json({ message: "List of all posts: ", getPosts });
 });
+
+// Get all posts by ID
 app.get("/api/v1/posts/:id", async (req, res) => {
-  /* Get post by ID */
+  const post = await db.readPost(req.params.id);
+  res.json({ message: "Post details: ", post });
 });
+
+// Create new post
 app.post("/api/v1/posts", async (req, res) => {
-  const postPromise = db.createPost(
+  const newPost = await db.createPost(
     req.headers.user,
-    "My second title",
-    "something not so interesting...",
+    "My fourth title",
+    "something not interesting at all...",
     true
   );
-  const newPost = await postPromise;
   res.json({ message: "Blog posting successful", newPost });
 });
+
+// Update post
 app.put("/api/v1/posts/:id", async (req, res) => {
-  const updatePromise = db.editPost(
+  const update = await db.editPost(
     req.params.id,
-    "Just 2nd Title",
-    "Something a bit more interesting",
+    "Just 3rd Title",
+    "Something a tiny bit more interesting",
     false
   );
-  const update = await updatePromise;
   res.json({
     message: "Post edited successufly",
     update,
   });
 });
+
+// Delete post
 app.delete("/api/v1/posts/:id", async (req, res) => {
-  const deletePostPromise = db.deletePost(req.headers.id);
-  const deletePost = await deletePostPromise;
+  const deletePost = await db.deletePost(req.params.id);
   res.json({ message: "Post deleted successfuly", deletePost });
 });
+
+
+
 
 // Comments (as a sub-resource of posts)
 app.get("/api/v1/posts/:postId/comments", async (req, res) => {
