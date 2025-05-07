@@ -37,7 +37,7 @@ async function createPost(user, title, text, isPublished) {
 async function editPost(id, title, text, isPublished) {
   const update = await prisma.posts.update({
     where: {
-      post_id: id,
+      post_id: parseInt(id),
     },
     data: {
       title: title,
@@ -48,9 +48,48 @@ async function editPost(id, title, text, isPublished) {
   return update;
 }
 
+async function deletePost(id) {
+  const del = await prisma.posts.delete({
+    where: {
+      post_id: parseInt(id),
+    },
+  });
+  return del;
+}
+
+async function getAllUsers() {
+  const getUsers = await prisma.users.findMany();
+  return getUsers;
+}
+
+async function updateUser(userID, firstName, lastName, email) {
+  const editUser = await prisma.users.update({
+    where: {
+      user_id: userID,
+    },
+    data: {
+      first_name: firstName,
+      last_name: lastName,
+      email: email,
+    },
+  });
+  return editUser;
+}
+
+async function deleteUser(userID) {
+  const deleteUser = await prisma.users.delete({
+    where: { user_id: userID },
+  });
+  return deleteUser
+}
+
 module.exports = {
   insertNewUser,
   readUser,
   createPost,
   editPost,
+  deletePost,
+  getAllUsers,
+  updateUser,
+  deleteUser,
 };
