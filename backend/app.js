@@ -1,9 +1,8 @@
 const express = require("express");
+const db = require("./queries");
 const jwt = require("jsonwebtoken");
-import { PrismaClient } from '@prisma/client';
 
 const app = express();
-const prisma = new PrismaClient();
 
 app.get("/api", (req, res) => {
   res.json({
@@ -31,13 +30,25 @@ app.post("/api/login", (req, res) => {
     {
       user,
     },
-    "secreto", {expiresIn: "30s"},
+    "secreto",
+    { expiresIn: "30s" },
     (err, token) => {
       res.json({
         token,
       });
     }
   );
+});
+
+app.get("/api/userDetails/:id", (req, res) => {
+  const user = db.readUser(req.params.id);
+  res.json({ message: "User details: ", user });
+});
+
+app.post("/api/createUser", async (req, res) => {
+  const newUserPromise = db.insertNewUser(req.headers.firstname, req.headers.lastname, req.headers.email, req.headers.password);
+  const newUser = await newUserPromise
+  res.json({ message: "New user created!: ", newUser });
 });
 
 function verifyToken(req, res, next) {
