@@ -16,7 +16,7 @@ async function insertNewUser(firstName, lastName, email, password) {
 async function readUser(id) {
     const result = await prisma.users.findUnique({
         where: {
-          id: id,
+          user_id: id,
         },
       });
       return result;

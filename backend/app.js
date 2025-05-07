@@ -40,14 +40,20 @@ app.post("/api/login", (req, res) => {
   );
 });
 
-app.get("/api/userDetails/:id", (req, res) => {
-  const user = db.readUser(req.params.id);
+app.get("/api/userDetails/:id", async (req, res) => {
+  const userPromise = db.readUser(req.params.id);
+  const user = await userPromise;
   res.json({ message: "User details: ", user });
 });
 
 app.post("/api/createUser", async (req, res) => {
-  const newUserPromise = db.insertNewUser(req.headers.firstname, req.headers.lastname, req.headers.email, req.headers.password);
-  const newUser = await newUserPromise
+  const newUserPromise = db.insertNewUser(
+    req.headers.firstname,
+    req.headers.lastname,
+    req.headers.email,
+    req.headers.password
+  );
+  const newUser = await newUserPromise;
   res.json({ message: "New user created!: ", newUser });
 });
 
