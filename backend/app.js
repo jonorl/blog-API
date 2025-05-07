@@ -49,7 +49,7 @@ app.delete("/api/v1/users/:id", async (req, res) => {
   res.json({ message: "User deleted successfully", deleteUser });
 });
 
-// Post Routes
+// Posts Routes
 
 // Get all posts
 app.get("/api/v1/posts", async (req, res) => {
@@ -94,24 +94,43 @@ app.delete("/api/v1/posts/:id", async (req, res) => {
   res.json({ message: "Post deleted successfuly", deletePost });
 });
 
+// Comments route
 
-
-
-// Comments (as a sub-resource of posts)
+// Get comments for a post
 app.get("/api/v1/posts/:postId/comments", async (req, res) => {
-  /* Get comments for a post */
+  const showPostComments = await db.showPostComments(req.params.postId);
+  res.json({ message: "Showing all comments for post", showPostComments });
 });
+
+// Add a comment to a post
 app.post("/api/v1/posts/:postId/comments", async (req, res) => {
-  /* Add a comment to a post */
+  const createComment = await db.createComment(
+    req.headers.user,
+    "Boo-urns!",
+    req.params.postId
+  );
+  res.json({ message: "comment added successfully!", createComment });
 });
+
+// Get a specific comment
 app.get("/api/v1/comments/:id", async (req, res) => {
-  /* Get a specific comment */
+  const showSpecificComment = await db.showSpecificComment(req.params.id);
+  res.json({ message: "Showing specific comment: ", showSpecificComment });
 });
+
+// Update a comment
 app.put("/api/v1/comments/:id", async (req, res) => {
-  /* Update a comment */
+  const updateComment = await db.updateComment(
+    req.params.id,
+    "Are you saying Boo or Boo-urns?"
+  );
+  res.json({ message: "Comment updated", updateComment });
 });
+
+// Delete a comment
 app.delete("/api/v1/comments/:id", async (req, res) => {
-  /* Delete a comment */
+  const deleteComment = await db.deleteComment(req.params.id);
+  res.json({ message: "Comment deleted successfully: ", deleteComment });
 });
 
 // Sample tutorial

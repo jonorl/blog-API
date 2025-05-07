@@ -80,7 +80,7 @@ async function deleteUser(userID) {
   const deleteUser = await prisma.users.delete({
     where: { user_id: userID },
   });
-  return deleteUser
+  return deleteUser;
 }
 
 async function getAllPosts() {
@@ -88,13 +88,63 @@ async function getAllPosts() {
   return getPosts;
 }
 
-async function readPost(id){
+async function readPost(id) {
   const result = await prisma.posts.findUnique({
     where: {
       post_id: parseInt(id),
     },
   });
   return result;
+}
+
+async function createComment(user, text, postID) {
+  const comment = await prisma.comments.create({
+    data: {
+      user_id: user,
+      comment_text: text,
+      post_id: parseInt(postID),
+    },
+  });
+  return comment;
+}
+
+async function showPostComments(postID) {
+  const comments = await prisma.comments.findMany({
+    where: {
+      post_id: parseInt(postID),
+    },
+  });
+  return comments;
+}
+
+async function showSpecificComment(commentID) {
+  const comment = await prisma.comments.findUnique({
+    where: {
+      comment_id: parseInt(commentID),
+    },
+  });
+  return comment;
+}
+
+async function updateComment(commentID, text) {
+  const comment = await prisma.comments.update({
+    where: {
+      comment_id: parseInt(commentID),
+    },
+    data: {
+      comment_text: text,
+    },
+  });
+  return comment;
+}
+
+async function deleteComment(commentID) {
+  const comment = await prisma.comments.delete({
+    where: {
+      comment_id: parseInt(commentID),
+    },
+  });
+  return comment;
 }
 
 module.exports = {
@@ -108,4 +158,9 @@ module.exports = {
   deleteUser,
   getAllPosts,
   readPost,
+  createComment,
+  showPostComments,
+  showSpecificComment,
+  updateComment,
+  deleteComment,
 };
