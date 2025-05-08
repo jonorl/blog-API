@@ -25,7 +25,7 @@ mainRouter.post("/api/v1/users", async (req, res) => {
     req.headers.email,
     req.headers.password
   );
-  (req.user = newUser); 
+  req.user = newUser;
   await mainController.signToken(req, res);
 });
 
@@ -61,16 +61,19 @@ mainRouter.get("/api/v1/posts/:id", async (req, res) => {
 });
 
 // Create new post
-mainRouter.post("/api/v1/posts", async (req, res) => {
-  mainController.verifyToken;
-  const newPost = await db.createPost(
-    req.headers.user,
-    "My fifth title",
-    "something bleh...",
-    true
-  );
-  res.json({ message: "Blog posting successful", newPost });
-});
+mainRouter.post(
+  "/api/v1/posts",
+  mainController.verifyToken,
+  async (req, res) => {
+    const newPost = await db.createPost(
+      req.headers.user,
+      "My fifth title",
+      "something bleh...",
+      true
+    );
+    res.json({ message: "Blog posting successful", newPost });
+  }
+);
 
 // Update post
 mainRouter.put("/api/v1/posts/:id", async (req, res) => {
