@@ -25,8 +25,10 @@ mainRouter.post("/api/v1/users", async (req, res) => {
     req.headers.email,
     req.headers.password
   );
-  res.json({ message: "New user created!: ", newUser });
+  (req.user = newUser); 
+  await mainController.signToken(req, res);
 });
+
 // Update a user
 mainRouter.put("/api/v1/users/:id", async (req, res) => {
   const editUser = await db.updateUser(
@@ -60,10 +62,11 @@ mainRouter.get("/api/v1/posts/:id", async (req, res) => {
 
 // Create new post
 mainRouter.post("/api/v1/posts", async (req, res) => {
+  mainController.verifyToken;
   const newPost = await db.createPost(
     req.headers.user,
-    "My fourth title",
-    "something not interesting at all...",
+    "My fifth title",
+    "something bleh...",
     true
   );
   res.json({ message: "Blog posting successful", newPost });
@@ -141,7 +144,7 @@ mainRouter.post("/api/login", (req, res) => {
       user,
     },
     process.env.SECRET,
-    { expiresIn: "30s" },
+    { expiresIn: "7d" },
     (err, token) => {
       res.json({
         token,
