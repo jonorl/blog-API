@@ -1,10 +1,10 @@
 const jwt = require("jsonwebtoken");
 
-async function signToken(req, res) {
+async function signToken(req, res, next) {
   const user = req.user;
-  token = await jwt.sign(user, process.env.SECRET, { expiresIn: "7d" });
+  req.token = await jwt.sign(user, process.env.SECRET, { expiresIn: "7d" });
   //   localStorage.setItem("authtoken", token);
-  res.json({ message: "New user created!: ", user, token });
+  next();
 }
 
 function verifyToken(req, res, next) {
@@ -15,7 +15,7 @@ function verifyToken(req, res, next) {
     req.token = bearerToken;
     jwt.verify(req.token, process.env.SECRET, (err, authData) => {
       if (err) {
-        console.log(err)
+        console.log(err);
       } else {
         console.log(authData);
       }

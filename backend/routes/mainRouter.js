@@ -17,17 +17,28 @@ mainRouter.get("/api/v1/users/:id", async (req, res) => {
 });
 
 // Create new user
-mainRouter.post("/api/v1/users", async (req, res) => {
-  const newUser = await db.insertNewUser(
-    // replace headers with body once form is created
-    req.headers.firstname,
-    req.headers.lastname,
-    req.headers.email,
-    req.headers.password
-  );
-  req.user = newUser;
-  await mainController.signToken(req, res);
-});
+mainRouter.post(
+  "/api/v1/users",
+  async (req, res, next) => {
+    const newUser = await db.insertNewUser(
+      // replace headers with body once form is created
+      req.headers.firstname,
+      req.headers.lastname,
+      req.headers.email,
+      req.headers.password
+    );
+    req.user = newUser;
+    next();
+  },
+  mainController.signToken,
+  (req, res) => {
+    res.json({
+      message: "New user created!: ",
+      user: req.user,
+      token: req.token,
+    });
+  }
+);
 
 // Update a user
 mainRouter.put("/api/v1/users/:id", async (req, res) => {
