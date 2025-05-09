@@ -3,6 +3,9 @@
 // Express setup
 const express = require("express");
 const app = express();
+const cors = require("cors");
+
+app.use(cors());
 
 // Router triggering
 const mainRouter = require("./routes/mainRouter");
@@ -36,7 +39,7 @@ const jwtLogin = new JwtStrategy(jwtOptions, async (payload, done) => {
 });
 
 passport.use(jwtLogin);
-app.use(passport.initialize())
+app.use(passport.initialize());
 
 // Launch and port confirmation
 app.listen(process.env.PORT, () =>
