@@ -11,11 +11,15 @@ const PostDetailPage = () => {
     console.log("Post ID:", id);
     const fetchPost = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/posts/${id}`);
-        if (response.ok) {
-          const data = await response.json();
-          setPost(data);
-          setComments(data.comments);
+        const posts = await fetch(`http://localhost:3000/api/v1/posts/${id}`);
+        const comments = await fetch (`http://localhost:3000/api/v1/posts/${id}/comments`)
+        if (posts.ok) {
+          const postsData = await posts.json();
+          const commentsData = await comments.json();
+          console.log("data.post", postsData.post)
+          console.log("data.showPostComments", commentsData.showPostComments)
+          setPost(postsData.post);
+          setComments(commentsData.showPostComments);
         }
       } catch (error) {
         console.error('Error fetching post:', error);
