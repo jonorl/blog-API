@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 const PostDetailPage = () => {
-  const {id} = useParams();
+  const { id } = useParams();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -12,12 +12,10 @@ const PostDetailPage = () => {
     const fetchPost = async () => {
       try {
         const posts = await fetch(`http://localhost:3000/api/v1/posts/${id}`);
-        const comments = await fetch (`http://localhost:3000/api/v1/posts/${id}/comments`)
+        const comments = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`)
         if (posts.ok) {
           const postsData = await posts.json();
           const commentsData = await comments.json();
-          console.log("data.post", postsData.post)
-          console.log("data.showPostComments", commentsData.showPostComments)
           setPost(postsData.post);
           setComments(commentsData.showPostComments);
         }
@@ -55,15 +53,22 @@ const PostDetailPage = () => {
   if (!post) return <p>Loading...</p>;
 
   return (
+
     <div className="p-4">
+
+      <div className="bg-red-500 text-white p-6 rounded-lg shadow-lg">
+        🌶️ If this box is red, Tailwind is working!
+      </div>
+
+
       <h1 className="text-2xl mb-2">{post.title}</h1>
       <p className="text-gray-600 mb-4">{post.content}</p>
 
       <div className="mb-4">
         <h2 className="text-xl mb-2">Comments</h2>
         {comments.map((comment) => (
-          <div key={comment._id} className="p-2 border-b">
-            <p>{comment.content}</p>
+          <div key={comment.comment_id} className="p-2 border-b">
+            <p>{comment.comment_text}</p>
           </div>
         ))}
       </div>
