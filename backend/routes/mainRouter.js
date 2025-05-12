@@ -142,7 +142,7 @@ mainRouter.post(
   async (req, res) => {
     const createComment = await db.createComment(
       req.headers.user,
-      "Boo-urns!",
+      req.body.text,
       req.params.postId
     );
     res.json({ message: "comment added successfully!", createComment });

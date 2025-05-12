@@ -6,6 +6,7 @@ const app = express();
 const cors = require("cors");
 
 app.use(cors());
+app.use(express.json());
 
 // Router triggering
 const mainRouter = require("./routes/mainRouter");

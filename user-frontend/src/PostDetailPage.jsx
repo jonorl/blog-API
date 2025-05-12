@@ -5,7 +5,6 @@ import { useParams } from 'react-router-dom';
 import {
   Card,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
   CardDescription
@@ -18,9 +17,6 @@ import {
   User,
   MessageSquare,
   Calendar,
-  Heart,
-  Share2,
-  Bookmark
 } from "lucide-react";
 
 const PostDetailPage = () => {
@@ -29,16 +25,15 @@ const PostDetailPage = () => {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    console.log("Post ID:", id);
     const fetchPost = async () => {
       try {
         const posts = await fetch(`http://localhost:3000/api/v1/posts/${id}`);
         const comments = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`)
         if (posts.ok) {
           const postsData = await posts.json();
-          console.log(postsData.post)
           const commentsData = await comments.json();
           setPost(postsData.post);
           setComments(commentsData.showPostComments);
@@ -51,30 +46,38 @@ const PostDetailPage = () => {
     fetchPost();
   }, [id]);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (newComment.trim() === '') return;
 
+    setIsSubmitting(true);
+
     try {
-      const response = await fetch(`http://localhost:3000/api/posts/${id}/comments`, {
+      const response = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          // Include user
+          'user': '103ab63f-1506-4a3b-9a2a-635b16b1d828',
+          // include authorization as well
+          'authorization': 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzYWI2M2YtMTUwNi00YTNiLTlhMmEtNjM1YjE2YjFkODI4IiwiZmlyc3RfbmFtZSI6IkpvbmFDdWF0cm8iLCJsYXN0X25hbWUiOiJPcmxvQ3VhdHJvIiwiZW1haWwiOiJqb240QG9ybG8uY29tIiwicGFzc3dvcmRfaGFzaCI6InBhc3N3b3JkNCEiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNS0wOVQwODo0Mzo1NS44NzJaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDUtMDlUMDg6NDM6NTUuODcyWiIsInJvbGVzIjoidXNlciIsImlhdCI6MTc0Njc4MDIzNSwiZXhwIjoxNzQ3Mzg1MDM1fQ.HUoBhzxrVHPC2vTdEoFaTkMsTl6lbSCcqwWSCDM0dLw'
         },
-        body: JSON.stringify({ content: newComment }),
+        body: JSON.stringify({
+          text: newComment,
+        })
       });
 
       if (response.ok) {
         const createdComment = await response.json();
-        setComments((prev) => [...prev, createdComment]);
+        const constcreateCommentData = createdComment.createComment
+        setComments((prev) => [...prev, constcreateCommentData]);
         setNewComment('');
       }
     } catch (error) {
       console.error('Error adding comment:', error);
+    }
+    finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -88,7 +91,7 @@ const PostDetailPage = () => {
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <BookOpen className="h-6 w-6 text-blue-400" />
-              <span className="ml-2 text-xl font-bold text-white">BlogSpace</span>
+              <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
             </div>
 
             {/* Desktop Navigation */}
@@ -175,7 +178,7 @@ const PostDetailPage = () => {
             <CardContent className="pt-6">
 
               <div className="prose prose-invert max-w-none">
-                <p className="text-slate-300 leading-relaxed text-lg"> 
+                <p className="text-slate-300 leading-relaxed text-lg">
                   {post.post_text}
                 </p>
               </div>
@@ -217,14 +220,16 @@ const PostDetailPage = () => {
                     placeholder="Share your thoughts..."
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="resize-none min-h-36 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400" // Increased min-h
+                    className="resize-none min-h-36 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
+                    disabled={isSubmitting}
                   />
                   <div className="flex justify-center">
                     <Button
                       type="submit"
-                      className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg" // Increased px, py, and text-lg
+                      className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
+                      disabled={isSubmitting}
                     >
-                      Post Comment
+                      {isSubmitting ? 'Posting...' : 'Post Comment'}
                     </Button>
                   </div>
                 </form>
@@ -240,10 +245,10 @@ const PostDetailPage = () => {
           <div className="flex flex-col items-center text-center">
             <div className="flex items-center mb-4">
               <BookOpen className="h-6 w-6 text-blue-400" />
-              <span className="ml-2 text-xl font-bold text-white">BlogSpace</span>
+              <span className="ml-2 text-xl font-bold text-white">Blog API project</span>
             </div>
             <div className="text-slate-400 text-sm">
-              © 2025 BlogSpace. All rights reserved.
+              © 2025 Blog API Project. jonorl@gmail.com
             </div>
           </div>
         </div>
