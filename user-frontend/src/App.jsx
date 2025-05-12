@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, LogIn, LogOut, Rss } from 'lucide-react';
+import { BookOpen, LogIn, LogOut, Rss, UserRoundPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Index = () => {
@@ -60,6 +60,11 @@ const Index = () => {
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
+              </a>
+
+              <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Sign up&nbsp;</span>
+                <UserRoundPlus className="h-4 w-4 mr-1" />
               </a>
 
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">

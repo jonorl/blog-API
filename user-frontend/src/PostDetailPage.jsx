@@ -18,6 +18,7 @@ import {
   LogIn,
   LogOut,
   Rss,
+  UserRoundPlus,
 } from "lucide-react";
 
 const PostDetailPage = () => {
@@ -29,7 +30,6 @@ const PostDetailPage = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editText, setEditText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-
 
   // Remove hardcoding at some point when login is developed
   const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828';
@@ -247,6 +247,11 @@ const PostDetailPage = () => {
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
+              </a>
+
+              <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Sign up&nbsp;</span>
+                <UserRoundPlus className="h-4 w-4 mr-1" />
               </a>
 
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
