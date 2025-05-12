@@ -19,8 +19,11 @@ const Index = () => {
             const commentsRepsonse = await fetch(
               `http://localhost:3000/api/v1/posts/${post.post_id}/comments`
             );
+            const userResponse = await fetch(`http://localhost:3000/api/v1/users/${post.author_id}`)
             const commentsData = await commentsRepsonse.json();
-            setPosts((prevPosts) => prevPosts.map((p) => p.post_id === post.post_id ? { ...p, commentsCount: commentsData.showPostComments.length } : 0))
+            const userData = await userResponse.json();
+            console.log(userData)
+            setPosts((prevPosts) => prevPosts.map((p) => p.post_id === post.post_id ? { ...p, commentsCount: commentsData.showPostComments.length, authorFirstName: userData.user.first_name, authorLastName: userData.user.last_name } : 0))
 
           })
           setPosts(posts)
@@ -32,7 +35,7 @@ const Index = () => {
     fetchPosts();
   }, []);
 
-return (
+  return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
       {/* Navigation Header */}
       <header className="sticky top-0 z-10 bg-slate-800 shadow-sm">
@@ -40,7 +43,7 @@ return (
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
               <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
-              <BookOpen className="h-6 w-6 text-blue-400" />
+                <BookOpen className="h-6 w-6 text-blue-400" />
                 <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
               </a>
             </div>
@@ -74,6 +77,11 @@ return (
                     </a>
                   </CardTitle>
                 </CardHeader>
+                <CardContent className="pt-4">
+                  <div className="flex items-center text-slate-400">
+                    <span>Author: {post.authorFirstName} {post.authorLastName}</span>
+                  </div>
+                </CardContent>
                 <CardContent className="pt-4">
                   <div className="flex items-center text-slate-400">
                     <span>{post.commentsCount || 0} Comments</span>
