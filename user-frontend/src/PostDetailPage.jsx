@@ -17,6 +17,8 @@ import {
   User,
   MessageSquare,
   Calendar,
+  Trash2,
+  Pencil,
 } from "lucide-react";
 
 const PostDetailPage = () => {
@@ -178,13 +180,16 @@ const PostDetailPage = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
+
+              <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
               <BookOpen className="h-6 w-6 text-blue-400" />
-              <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
+                <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
+              </a>
             </div>
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
-              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <Home className="h-4 w-4 mr-1" />
                 <span>Home</span>
               </a>
@@ -316,14 +321,14 @@ const PostDetailPage = () => {
                             className="text-slate-400 hover:text-blue-500 focus:outline-none"
                             aria-label="Edit comment"
                           >
-                            <PencilIcon className="h-5 w-5" />
+                            <Pencil className="h-5 w-5" />
                           </button>
                           <button
                             onClick={() => handleDelete(comment.comment_id)}
                             className="text-slate-400 hover:text-red-500 focus:outline-none"
                             aria-label="Delete comment"
                           >
-                            <TrashIcon className="h-5 w-5" />
+                            <Trash2 className="h-5 w-5" />
                           </button>
                         </div>
                       )}
