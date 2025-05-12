@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 // shadcn/ui components
 import {
   Card,
@@ -13,12 +12,11 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   BookOpen,
-  Home,
-  User,
-  MessageSquare,
   Calendar,
   Trash2,
   Pencil,
+  LogIn,
+  LogOut,
 } from "lucide-react";
 
 const PostDetailPage = () => {
@@ -26,7 +24,6 @@ const PostDetailPage = () => {
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editText, setEditText] = useState('');
@@ -182,72 +179,29 @@ const PostDetailPage = () => {
             <div className="flex items-center">
 
               <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
-              <BookOpen className="h-6 w-6 text-blue-400" />
+                <BookOpen className="h-6 w-6 text-blue-400" />
                 <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
               </a>
             </div>
-
-            {/* Desktop Navigation */}
             <nav className="hidden md:flex space-x-8">
-              <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <Home className="h-4 w-4 mr-1" />
-                <span>Home</span>
-              </a>
+
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <User className="h-4 w-4 mr-1" />
-                <span>About</span>
+                <span>Login</span>
+                <LogIn className="h-4 w-4 mr-1" />
               </a>
+
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <MessageSquare className="h-4 w-4 mr-1" />
-                <span>Contact</span>
+                <span>Logout</span>
+                <LogOut className="h-4 w-4 mr-1" />
               </a>
             </nav>
 
-            {/* Mobile Menu Button */}
-            <div className="md:hidden">
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-slate-300 hover:text-blue-400"
-                aria-label="Toggle Mobile Menu"
-              >
-                {isMenuOpen ? (
-                  // Replace with an X icon if you have one, or keep it like this for now
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
 
-                ) : (
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-                  </svg>
-                )}
-              </button>
-            </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-slate-800 shadow-md">
-          <div className="container mx-auto px-4 py-2 max-w-4xl">
-            <nav className="flex flex-col space-y-3">
-              <a href="#" className="text-slate-300 hover:text-blue-400 py-2 flex items-center">
-                <Home className="h-4 w-4 mr-2" />
-                <span>Home</span>
-              </a>
-              <a href="#" className="text-slate-300 hover:text-blue-400 py-2 flex items-center">
-                <User className="h-4 w-4 mr-2" />
-                <span>About</span>
-              </a>
-              <a href="#" className="text-slate-300 hover:text-blue-400 py-2 flex items-center">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                <span>Contact</span>
-              </a>
-            </nav>
-          </div>
-        </div>
-      )}
+
 
       {/* Main Content */}
       <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
@@ -260,7 +214,7 @@ const PostDetailPage = () => {
               </CardTitle>
               <CardDescription className="text-slate-400 flex items-center justify-center gap-4 mt-2 flex-wrap">
                 <div className="flex items-center">
-                  <span>{post.author}</span>
+                  <span>{post.author_id}</span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
@@ -291,8 +245,8 @@ const PostDetailPage = () => {
                       */}
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2"> {/* Increased mb-1 to mb-2 */}
-                          <h4 className="font-semibold text-white">{comment.author}</h4>
-                          <span className="text-sm text-slate-400">{comment.date}</span> {/* Decreased text size */}
+                          <h4 className="font-semibold text-white">{comment.user_id} said:</h4>
+                          <span className="text-sm text-slate-400">{formatDate(comment.comment_created_at)}</span> {/* Decreased text size */}
                         </div>
                         {editingCommentId === comment.comment_id ? (
                           <div className="flex flex-col space-y-2">

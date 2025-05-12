@@ -55,12 +55,6 @@ const Index = () => {
                 <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
               </a>
             </div>
-            <nav className="flex space-x-8">
-              <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <Home className="h-4 w-4 mr-1" />
-                <span>Home</span>
-              </a>
-            </nav>
           </div>
         </div>
       </header>
