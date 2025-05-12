@@ -30,8 +30,20 @@ const PostDetailPage = () => {
   const [editText, setEditText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
 
+
+  // Remove hardcoding at some point when login is developed
   const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828'; // Assuming you have access to the current user's ID
   const authToken = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzYWI2M2YtMTUwNi00YTNiLTlhMmEtNjM1YjE2YjFkODI4IiwiZmlyc3RfbmFtZSI6IkpvbmFDdWF0cm8iLCJsYXN0X25hbWUiOiJPcmxvQ3VhdHJvIiwiZW1haWwiOiJqb240QG9ybG8uY29tIiwicGFzc3dvcmRfaGFzaCI6InBhc3N3b3JkNCEiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNS0wOVQwODo0Mzo1NS44NzJaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDUtMDlUMDg6NDM6NTUuODcyWiIsInJvbGVzIjoidXNlciIsImlhdCI6MTc0Njc4MDIzNSwiZXhwIjoxNzQ3Mzg1MDM1fQ.HUoBhzxrVHPC2vTdEoFaTkMsTl6lbSCcqwWSCDM0dLw'; // Assuming you have access to the auth token
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-UK', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -247,7 +259,7 @@ const PostDetailPage = () => {
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
-                  <span>{post.message_created_at}</span>
+                  <span>{formatDate(post.message_created_at)}</span>
                 </div>
               </CardDescription>
             </CardHeader>
