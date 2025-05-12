@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-
+import { PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 // shadcn/ui components
 import {
   Card,
@@ -26,6 +26,12 @@ const PostDetailPage = () => {
   const [newComment, setNewComment] = useState('');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editText, setEditText] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+
+  const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828'; // Assuming you have access to the current user's ID
+  const authToken = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzYWI2M2YtMTUwNi00YTNiLTlhMmEtNjM1YjE2YjFkODI4IiwiZmlyc3RfbmFtZSI6IkpvbmFDdWF0cm8iLCJsYXN0X25hbWUiOiJPcmxvQ3VhdHJvIiwiZW1haWwiOiJqb240QG9ybG8uY29tIiwicGFzc3dvcmRfaGFzaCI6InBhc3N3b3JkNCEiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNS0wOVQwODo0Mzo1NS44NzJaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDUtMDlUMDg6NDM6NTUuODcyWiIsInJvbGVzIjoidXNlciIsImlhdCI6MTc0Njc4MDIzNSwiZXhwIjoxNzQ3Mzg1MDM1fQ.HUoBhzxrVHPC2vTdEoFaTkMsTl6lbSCcqwWSCDM0dLw'; // Assuming you have access to the auth token
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -58,9 +64,9 @@ const PostDetailPage = () => {
         headers: {
           'Content-Type': 'application/json',
           // Include user
-          'user': '103ab63f-1506-4a3b-9a2a-635b16b1d828',
+          'user': userId,
           // include authorization as well
-          'authorization': 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzYWI2M2YtMTUwNi00YTNiLTlhMmEtNjM1YjE2YjFkODI4IiwiZmlyc3RfbmFtZSI6IkpvbmFDdWF0cm8iLCJsYXN0X25hbWUiOiJPcmxvQ3VhdHJvIiwiZW1haWwiOiJqb240QG9ybG8uY29tIiwicGFzc3dvcmRfaGFzaCI6InBhc3N3b3JkNCEiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNS0wOVQwODo0Mzo1NS44NzJaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDUtMDlUMDg6NDM6NTUuODcyWiIsInJvbGVzIjoidXNlciIsImlhdCI6MTc0Njc4MDIzNSwiZXhwIjoxNzQ3Mzg1MDM1fQ.HUoBhzxrVHPC2vTdEoFaTkMsTl6lbSCcqwWSCDM0dLw'
+          'authorization': authToken
         },
         body: JSON.stringify({
           text: newComment,
@@ -78,6 +84,76 @@ const PostDetailPage = () => {
     }
     finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleEdit = (comment) => {
+    setEditingCommentId(comment.comment_id);
+    setEditText(comment.comment_text);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async (commentId) => {
+    if (editText.trim() === '') return;
+    setIsSubmitting(true);
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/comments/${commentId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': authToken
+        },
+        body: JSON.stringify({
+          text: editText,
+        }),
+      });
+
+      if (response.ok) {
+        const updatedComment = await response.json();
+        setComments((prevComments) => {
+          return prevComments.map((comment) =>
+            comment.comment_id === commentId ? { ...comment, comment_text: updatedComment.updateComment.comment_text } : comment
+          );
+        });
+        setEditingCommentId(null);
+        setEditText('');
+        setIsEditing(false);
+      } else {
+        console.error('Error updating comment:', response.status);
+      }
+    } catch (error) {
+      console.error('Error updating comment:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditText('');
+    setIsEditing(false);
+  };
+
+  const handleDelete = async (commentId) => {
+    if (window.confirm('Are you sure you want to delete this comment?')) {
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/comments/${commentId}`, {
+          method: 'DELETE',
+          headers: {
+            'authorization': authToken
+          },
+        });
+
+        if (response.ok) {
+          setComments((prevComments) =>
+            prevComments.filter((comment) => comment.comment_id !== commentId)
+          );
+        } else {
+          console.error('Error deleting comment:', response.status);
+        }
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
     }
   };
 
@@ -201,8 +277,44 @@ const PostDetailPage = () => {
                           <h4 className="font-semibold text-white">{comment.author}</h4>
                           <span className="text-sm text-slate-400">{comment.date}</span> {/* Decreased text size */}
                         </div>
-                        <p className="text-slate-300 leading-relaxed">{comment.comment_text}</p>
+                        {editingCommentId === comment.comment_id ? (
+                          <div className="flex flex-col space-y-2">
+                            <Textarea
+                              value={editText}
+                              onChange={(e) => setEditText(e.target.value)}
+                              className="resize-none min-h-20 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
+                            />
+                            <div className="flex justify-end space-x-2">
+                              <Button size="sm" onClick={() => handleSaveEdit(comment.comment_id)} disabled={isSubmitting}>
+                                Save
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-slate-300 leading-relaxed">{comment.comment_text}</p>
+                        )}
                       </div>
+                      {comment.user_id === userId && editingCommentId !== comment.comment_id && (
+                        <div className="flex flex-col space-y-2">
+                          <button
+                            onClick={() => handleEdit(comment)}
+                            className="text-slate-400 hover:text-blue-500 focus:outline-none"
+                            aria-label="Edit comment"
+                          >
+                            <PencilIcon className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(comment.comment_id)}
+                            className="text-slate-400 hover:text-red-500 focus:outline-none"
+                            aria-label="Delete comment"
+                          >
+                            <TrashIcon className="h-5 w-5" />
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -221,13 +333,13 @@ const PostDetailPage = () => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     className="resize-none min-h-36 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || isEditing}
                   />
                   <div className="flex justify-center">
                     <Button
                       type="submit"
                       className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
-                      disabled={isSubmitting}
+                      disabled={isSubmitting || isEditing}
                     >
                       {isSubmitting ? 'Posting...' : 'Post Comment'}
                     </Button>

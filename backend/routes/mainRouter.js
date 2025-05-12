@@ -156,7 +156,7 @@ mainRouter.put(
   async (req, res) => {
     const updateComment = await db.updateComment(
       req.params.id,
-      "Are you saying Boo or Boo-urns?"
+      req.body.text,
     );
     res.json({ message: "Comment updated", updateComment });
   }
