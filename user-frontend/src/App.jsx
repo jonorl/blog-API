@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BookOpen, Home } from 'lucide-react';
+import { BookOpen, LogIn, LogOut, Rss } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Index = () => {
@@ -55,7 +55,25 @@ const Index = () => {
                 <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
               </a>
             </div>
+            <nav className="hidden md:flex space-x-8">
+
+              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Blogger CMS access&nbsp;</span>
+                <Rss className="h-4 w-4 mr-1" />
+              </a>
+
+              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Login&nbsp;</span>
+                <LogIn className="h-4 w-4 mr-1" />
+              </a>
+
+              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Logout&nbsp;</span>
+                <LogOut className="h-4 w-4 mr-1" />
+              </a>
+            </nav>
           </div>
+
         </div>
       </header>
 

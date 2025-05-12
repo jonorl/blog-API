@@ -17,6 +17,7 @@ import {
   Pencil,
   LogIn,
   LogOut,
+  Rss,
 } from "lucide-react";
 
 const PostDetailPage = () => {
@@ -31,7 +32,7 @@ const PostDetailPage = () => {
 
 
   // Remove hardcoding at some point when login is developed
-  const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828'; // Assuming you have access to the current user's ID
+  const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828';
   const authToken = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzYWI2M2YtMTUwNi00YTNiLTlhMmEtNjM1YjE2YjFkODI4IiwiZmlyc3RfbmFtZSI6IkpvbmFDdWF0cm8iLCJsYXN0X25hbWUiOiJPcmxvQ3VhdHJvIiwiZW1haWwiOiJqb240QG9ybG8uY29tIiwicGFzc3dvcmRfaGFzaCI6InBhc3N3b3JkNCEiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNS0wOVQwODo0Mzo1NS44NzJaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDUtMDlUMDg6NDM6NTUuODcyWiIsInJvbGVzIjoidXNlciIsImlhdCI6MTc0Njc4MDIzNSwiZXhwIjoxNzQ3Mzg1MDM1fQ.HUoBhzxrVHPC2vTdEoFaTkMsTl6lbSCcqwWSCDM0dLw'; // Assuming you have access to the auth token
 
   const formatDate = (dateString) => {
@@ -45,22 +46,80 @@ const PostDetailPage = () => {
   };
 
   useEffect(() => {
-    const fetchPost = async () => {
+    const fetchPostAndUsers = async () => {
       try {
-        const posts = await fetch(`http://localhost:3000/api/v1/posts/${id}`);
-        const comments = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`)
-        if (posts.ok) {
-          const postsData = await posts.json();
-          const commentsData = await comments.json();
-          setPost(postsData.post);
-          setComments(commentsData.showPostComments);
+        // Fetch post and comments
+        const postResponse = await fetch(`http://localhost:3000/api/v1/posts/${id}`, {
+          headers: { Authorization: authToken },
+        });
+        const commentsResponse = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`, {
+          headers: { Authorization: authToken },
+        });
+
+        if (!postResponse.ok || !commentsResponse.ok) {
+          throw new Error('Failed to fetch post or comments');
         }
+
+        const postData = await postResponse.json();
+        const commentsData = await commentsResponse.json();
+
+        const post = postData.post;
+        const comments = commentsData.showPostComments;
+
+        // Collect unique user IDs
+        const userIds = [
+          post.author_id,
+          ...comments.map((comment) => comment.user_id),
+        ].filter((id, index, self) => id && self.indexOf(id) === index);
+
+        // Fetch user data with auth token
+        const userPromises = userIds.map((id) =>
+          fetch(`http://localhost:3000/api/v1/users/${id}`, {
+            headers: { Authorization: authToken },
+          }).then((res) => {
+            if (!res.ok) {
+              console.warn(`Failed to fetch user ${id}: ${res.status}`);
+              return { user: { user_id: id, first_name: null } }; // Fallback for failed fetch
+            }
+            return res.json();
+          })
+        );
+
+        const users = await Promise.all(userPromises);
+        // Log users to verify
+        console.log('Users response:', users);
+
+        // Map user_id to first_name
+        const userMap = users.reduce((map, user) => {
+          map[user.user.user_id] = user.user.first_name;
+          return map;
+        }, {});
+
+        // Attach first_name to post
+        const updatedPost = {
+          ...post,
+          author: userMap[post.author_id],
+        };
+
+        // Attach first_name to comments
+        const updatedComments = comments.map((comment) => ({
+          ...comment,
+          author: userMap[comment.user_id],
+        }));
+
+        // Update state
+        setPost(updatedPost);
+        setComments(updatedComments);
+
+        // Log final state to verify
+        console.log('Updated post:', updatedPost);
+        console.log('Updated comments:', updatedComments);
       } catch (error) {
-        console.error('Error fetching post:', error);
+        console.error('Error fetching data:', error);
       }
     };
 
-    fetchPost();
+    fetchPostAndUsers();
   }, [id]);
 
   const handleCommentSubmit = async (e) => {
@@ -186,12 +245,17 @@ const PostDetailPage = () => {
             <nav className="hidden md:flex space-x-8">
 
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Login</span>
+                <span>Blogger CMS access&nbsp;</span>
+                <Rss className="h-4 w-4 mr-1" />
+              </a>
+
+              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Login&nbsp;</span>
                 <LogIn className="h-4 w-4 mr-1" />
               </a>
 
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Logout</span>
+                <span>Logout&nbsp;</span>
                 <LogOut className="h-4 w-4 mr-1" />
               </a>
             </nav>
@@ -214,7 +278,7 @@ const PostDetailPage = () => {
               </CardTitle>
               <CardDescription className="text-slate-400 flex items-center justify-center gap-4 mt-2 flex-wrap">
                 <div className="flex items-center">
-                  <span>{post.author_id}</span>
+                  <span>{post.author}</span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
@@ -245,7 +309,7 @@ const PostDetailPage = () => {
                       */}
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2"> {/* Increased mb-1 to mb-2 */}
-                          <h4 className="font-semibold text-white">{comment.user_id} said:</h4>
+                          <h4 className="font-semibold text-white">{comment.author} said:</h4>
                           <span className="text-sm text-slate-400">{formatDate(comment.comment_created_at)}</span> {/* Decreased text size */}
                         </div>
                         {editingCommentId === comment.comment_id ? (
