@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-
 import { BookOpen, Home } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -13,20 +12,29 @@ const Index = () => {
 
         if (response.ok) {
           const data = await response.json();
-          const posts = data.getPosts
+          const initialPosts = data.getPosts;
 
-          posts.forEach(async (post) => {
-            const commentsRepsonse = await fetch(
-              `http://localhost:3000/api/v1/posts/${post.post_id}/comments`
-            );
-            const userResponse = await fetch(`http://localhost:3000/api/v1/users/${post.author_id}`)
-            const commentsData = await commentsRepsonse.json();
-            const userData = await userResponse.json();
-            console.log(userData)
-            setPosts((prevPosts) => prevPosts.map((p) => p.post_id === post.post_id ? { ...p, commentsCount: commentsData.showPostComments.length, authorFirstName: userData.user.first_name, authorLastName: userData.user.last_name } : 0))
+          const postsWithDetails = await Promise.all(
+            initialPosts.map(async (post) => {
+              const commentsResponse = await fetch(
+                `http://localhost:3000/api/v1/posts/${post.post_id}/comments`
+              );
+              const userResponse = await fetch(
+                `http://localhost:3000/api/v1/users/${post.author_id}`
+              );
+              const commentsData = await commentsResponse.json();
+              const userData = await userResponse.json();
 
-          })
-          setPosts(posts)
+              return {
+                ...post,
+                commentsCount: commentsData.showPostComments.length,
+                authorFirstName: userData.user.first_name,
+                authorLastName: userData.user.last_name,
+              };
+            })
+          );
+
+          setPosts(postsWithDetails);
         }
       } catch (error) {
         console.error('Error fetching post:', error);
