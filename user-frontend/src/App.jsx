@@ -1,9 +1,39 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { BookOpen, LogIn, LogOut, Rss, UserRoundPlus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Index = () => {
   const [posts, setPosts] = useState([]);
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem("authtoken");
+        if (!token) {
+          console.warn("No auth token found");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:3000/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
+          headers: { Authorization: token },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch current user");
+        }
+
+        const userData = await response.json();
+        setCurrentUser(userData.user);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -43,6 +73,14 @@ const Index = () => {
     fetchPosts();
   }, []);
 
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("authtoken");
+    setCurrentUser(null);
+    navigate("/"); 
+  };
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
       {/* Navigation Header */}
@@ -56,25 +94,35 @@ const Index = () => {
               </a>
             </div>
             <nav className="hidden md:flex space-x-8">
+              {currentUser ? (
+                <>
+                  <span>Hello {currentUser.first_name}&nbsp; </span>
+
+                  <a href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleLogout();
+                    }} className="text-slate-300 hover:text-blue-400 flex items-center">
+                    <span>Logout </span>
+                    <LogOut className="h-4 w-4 mr-1" />
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
+                    <span>Sign up </span>
+                    <UserRoundPlus className="h-4 w-4 mr-1" />
+                  </a>
+                  <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                    <span>Login </span>
+                    <LogIn className="h-4 w-4 mr-1" />
+                  </a>
+                </>
+              )}
 
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
-              </a>
-
-              <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Sign up&nbsp;</span>
-                <UserRoundPlus className="h-4 w-4 mr-1" />
-              </a>
-
-              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Login&nbsp;</span>
-                <LogIn className="h-4 w-4 mr-1" />
-              </a>
-
-              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Logout&nbsp;</span>
-                <LogOut className="h-4 w-4 mr-1" />
               </a>
             </nav>
           </div>

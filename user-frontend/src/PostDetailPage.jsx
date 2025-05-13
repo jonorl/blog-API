@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 // shadcn/ui components
 import {
@@ -41,6 +42,14 @@ const PostDetailPage = () => {
       day: 'numeric'
     });
   };
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("authtoken");
+    setCurrentUser(null);
+    navigate("/");
+  }
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -120,16 +129,24 @@ const PostDetailPage = () => {
           return map;
         }, {});
 
+        // Map user_id to last_name
+        const userMapLastName = users.reduce((map, user) => {
+          map[user.user.user_id] = user.user.last_name;
+          return map;
+        }, {});
+
         // Attach first_name to post
         const updatedPost = {
           ...post,
-          author: userMap[post.author_id],
+          authorFirstName: userMap[post.author_id],
+          authorLastName: userMapLastName[post.author_id],
         };
 
         // Attach first_name to comments
         const updatedComments = comments.map((comment) => ({
           ...comment,
-          author: userMap[comment.user_id],
+          authorFirstName: userMap[comment.user_id],
+          authorLastName: userMapLastName[comment.user_id],
         }));
 
         // Update state
@@ -172,7 +189,8 @@ const PostDetailPage = () => {
 
         const updatedComment = {
           ...constcreateCommentData,
-          author: currentUser?.first_name
+          authorFirstName: currentUser?.first_name,
+          authorLastName: currentUser?.last_name,
         };
 
         setComments((prev) => [...prev, updatedComment]);
@@ -272,25 +290,35 @@ const PostDetailPage = () => {
               </a>
             </div>
             <nav className="hidden md:flex space-x-8">
+              {currentUser ? (
+                <>
+                  <span>Hello {currentUser.first_name}&nbsp; </span>
+
+                  <a href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleLogout();
+                    }} className="text-slate-300 hover:text-blue-400 flex items-center">
+                    <span>Logout </span>
+                    <LogOut className="h-4 w-4 mr-1" />
+                  </a>
+                </>
+              ) : (
+                <>
+                  <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
+                    <span>Sign up </span>
+                    <UserRoundPlus className="h-4 w-4 mr-1" />
+                  </a>
+                  <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                    <span>Login </span>
+                    <LogIn className="h-4 w-4 mr-1" />
+                  </a>
+                </>
+              )}
 
               <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
-              </a>
-
-              <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Sign up&nbsp;</span>
-                <UserRoundPlus className="h-4 w-4 mr-1" />
-              </a>
-
-              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Login&nbsp;</span>
-                <LogIn className="h-4 w-4 mr-1" />
-              </a>
-
-              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Logout&nbsp;</span>
-                <LogOut className="h-4 w-4 mr-1" />
               </a>
             </nav>
 
@@ -312,7 +340,7 @@ const PostDetailPage = () => {
               </CardTitle>
               <CardDescription className="text-slate-400 flex items-center justify-center gap-4 mt-2 flex-wrap">
                 <div className="flex items-center">
-                  <span>{post.author}</span>
+                  <span>{post.authorFirstName + " " + post.authorLastName} </span>
                 </div>
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
@@ -333,17 +361,14 @@ const PostDetailPage = () => {
           {/* Comments Section */}
           <div className="mb-8 w-full ">
             <h2 className="text-2xl font-bold mb-6 text-white text-center">Comments ({comments.length})</h2> {/* Increased mb-4 to mb-6 */}
-            <div className="space-y-6 mb-8"> {/* Increased space-y-4 to space-y-6 and mb-6 to mb-8 */}
+            <div className="space-y-6 mb-8"> 
               {comments.map((comment) => (
                 <Card key={comment.comment_id} className="bg-slate-800 border-slate-700 text-slate-200 shadow-md"> {/* Added shadow-md */}
                   <CardContent className="pt-6">
-                    <div className="flex items-start space-x-6"> {/* Increased space-x-4 to space-x-6 */}
-                      {/* You can add a user avatar here
-                      <div className="w-10 h-10 rounded-full bg-gray-500"></div>
-                      */}
+                    <div className="flex items-start space-x-6"> 
                       <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2"> {/* Increased mb-1 to mb-2 */}
-                          <h4 className="font-semibold text-white">{comment.author} said:</h4>
+                        <div className="flex items-center justify-between mb-2"> 
+                          <h4 className="font-semibold text-white">{comment.authorFirstName} said:</h4>
                           <span className="text-sm text-slate-400">{formatDate(comment.comment_created_at)}</span> {/* Decreased text size */}
                         </div>
                         {editingCommentId === comment.comment_id ? (
@@ -366,7 +391,7 @@ const PostDetailPage = () => {
                           <p className="text-slate-300 leading-relaxed">{comment.comment_text}</p>
                         )}
                       </div>
-                      {editingCommentId !== comment.comment_id && (
+                      {editingCommentId !== comment.comment_id && currentUser && comment.user_id === currentUser.user_id &&(
                         <div className="flex flex-col space-y-2">
                           <button
                             onClick={() => handleEdit(comment)}
@@ -391,9 +416,9 @@ const PostDetailPage = () => {
             </div>
 
             {/* Comment Form */}
-            <Card className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg"> {/* Added shadow-lg */}
+            <Card className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg"> 
               <CardHeader>
-                <CardTitle className="text-xl text-center text-white">Leave a Comment</CardTitle>
+                <CardTitle className="text-xl text-center text-white">Leave a Comment {!currentUser && "(must be logged in first)"}</CardTitle>
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleCommentSubmit} className="space-y-4">
@@ -402,13 +427,13 @@ const PostDetailPage = () => {
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
                     className="resize-none min-h-36 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                    disabled={isSubmitting || isEditing}
+                    disabled={isSubmitting || isEditing || !currentUser}
                   />
                   <div className="flex justify-center">
                     <Button
                       type="submit"
                       className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
-                      disabled={isSubmitting || isEditing}
+                      disabled={isSubmitting || isEditing || !currentUser}
                     >
                       {isSubmitting ? 'Posting...' : 'Post Comment'}
                     </Button>
