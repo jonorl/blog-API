@@ -3,13 +3,21 @@ import React, { useEffect, useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 
+import {
+  Trash2,
+  Pencil,
+} from "lucide-react";
 
 const Index = () => {
   const [posts, setPosts] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  // const [currentUser, setCurrentUser] = useState(null);
+
+  //hardcoded user
+  const currentUser = {
+    user_id: "5b8872a0-dae5-4a21-8a00-5861f8d446b5"
+  }
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -28,8 +36,8 @@ const Index = () => {
           throw new Error("Failed to fetch current user");
         }
 
-        const userData = await response.json();
-        setCurrentUser(userData.user);
+        // const userData = await response.json();
+        // setCurrentUser(userData.user);
       } catch (error) {
         console.error("Error fetching current user:", error);
       }
@@ -105,6 +113,26 @@ const Index = () => {
                 <p className="text-sm text-gray-500 dark:text-gray-400">{post.message_created_at}</p>
               </div>
             </div>
+
+            {post.author_id === currentUser.user_id && (
+              <div className="flex flex-col space-y-2">
+                <button
+                  /* onClick={() => handleEdit(post)} */
+                  className="text-slate-400 hover:text-blue-500 focus:outline-none"
+                  aria-label="Edit post"
+                >
+                  <Pencil className="h-5 w-5" />
+                </button>
+                <button
+                  /* onClick={() => handleDelete(post.post_id)} */
+                  className="text-slate-400 hover:text-red-500 focus:outline-none"
+                  aria-label="Delete post"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </button>
+              </div>
+            )}
+
             <div className="flex items-center space-x-2">
               <Switch checked={post.is_published} id="airplane-mode" className="border-2 border-gray-300 dark:border-gray-600 [&>span]:bg-white [&>span]:shadow-md" />
               <Label htmlFor="airplane-mode">Publish?</Label>
@@ -115,7 +143,7 @@ const Index = () => {
 
       {/* Footer */}
       <footer className="max-w-5xl mx-auto p-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-500 dark:text-gray-400">
-        &copy; 2025 My Tailwind Blog. All rights reserved.
+        &copy; 2025 Blogger CMS / Blog API. jonorl@gmail.com.
       </footer>
     </div>
   );
