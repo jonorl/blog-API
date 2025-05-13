@@ -179,8 +179,8 @@ mainRouter.put(
   async (req, res) => {
     const update = await db.editPost(
       req.params.id,
-      "Just 3rd Title",
-      "Something a tiny bit more interesting",
+      "Let's keep the same title for now",
+      req.body.text,
       false
     );
     res.json({

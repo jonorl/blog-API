@@ -1,7 +1,8 @@
 module.exports = {
+  darkMode: 'class', 
   content: [
-    "./index.html",            // your root HTML
-    "./src/**/*.{js,jsx,ts,tsx}"  // every React component
+    "./index.html",           
+    "./src/**/*.{js,jsx}" 
   ],
   theme: {
     extend: {},
