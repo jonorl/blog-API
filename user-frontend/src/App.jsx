@@ -135,7 +135,7 @@ const Index = () => {
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold text-white text-center mb-8">All Posts</h1>
           <div className="space-y-6">
-            {posts.map((post) => (
+            {posts.filter((post) => post.is_published === true).map((post) => (
               <Card
                 key={post.post_id}
                 className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg hover:shadow-xl transition-shadow"
