@@ -7,7 +7,7 @@ async function signToken(req, res, next) {
 }
 
 function verifyToken(req, res, next) {
-  const bearerHeader = req.headers.authorization;
+  const bearerHeader = req.headers.authorization || req.params.id;
   if (typeof bearerHeader !== "undefined") {
     const bearer = bearerHeader.split(" ");
     const bearerToken = bearer[1];

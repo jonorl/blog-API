@@ -30,9 +30,7 @@ const PostDetailPage = () => {
   const [editingCommentId, setEditingCommentId] = useState(null);
   const [editText, setEditText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-
-  // Remove hardcoding at some point when login is developed
-  const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828';
+  const [currentUser, setCurrentUser] = useState(null);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -45,6 +43,34 @@ const PostDetailPage = () => {
   };
 
   useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const token = localStorage.getItem("authtoken");
+        if (!token) {
+          console.warn("No auth token found");
+          return;
+        }
+
+        const response = await fetch(`http://localhost:3000/api/v1/users/${localStorage.getItem("authtoken")}`, {
+          headers: { Authorization: token },
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch current user");
+        }
+
+        const userData = await response.json();
+        setCurrentUser(userData.user);
+      } catch (error) {
+        console.error("Error fetching current user:", error);
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
+
+  useEffect(() => {
+
     const fetchPostAndUsers = async () => {
       try {
         // Fetch post and comments
@@ -143,7 +169,13 @@ const PostDetailPage = () => {
       if (response.ok) {
         const createdComment = await response.json();
         const constcreateCommentData = createdComment.createComment
-        setComments((prev) => [...prev, constcreateCommentData]);
+
+        const updatedComment = {
+          ...constcreateCommentData,
+          author: currentUser?.first_name
+        };
+
+        setComments((prev) => [...prev, updatedComment]);
         setNewComment('');
       }
     } catch (error) {
@@ -334,7 +366,7 @@ const PostDetailPage = () => {
                           <p className="text-slate-300 leading-relaxed">{comment.comment_text}</p>
                         )}
                       </div>
-                      {comment.user_id === userId && editingCommentId !== comment.comment_id && (
+                      {editingCommentId !== comment.comment_id && (
                         <div className="flex flex-col space-y-2">
                           <button
                             onClick={() => handleEdit(comment)}
