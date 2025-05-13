@@ -3,7 +3,6 @@ const jwt = require("jsonwebtoken");
 async function signToken(req, res, next) {
   const user = req.user;
   req.token = await jwt.sign(user, process.env.SECRET, { expiresIn: "7d" });
-  //   localStorage.setItem("authtoken", token);
   next();
 }
 
@@ -18,6 +17,7 @@ function verifyToken(req, res, next) {
         console.log(err);
       } else {
         console.log(authData);
+        req.user = authData
       }
     });
     next();

@@ -33,7 +33,6 @@ const PostDetailPage = () => {
 
   // Remove hardcoding at some point when login is developed
   const userId = '103ab63f-1506-4a3b-9a2a-635b16b1d828';
-  const authToken = 'bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMTAzYWI2M2YtMTUwNi00YTNiLTlhMmEtNjM1YjE2YjFkODI4IiwiZmlyc3RfbmFtZSI6IkpvbmFDdWF0cm8iLCJsYXN0X25hbWUiOiJPcmxvQ3VhdHJvIiwiZW1haWwiOiJqb240QG9ybG8uY29tIiwicGFzc3dvcmRfaGFzaCI6InBhc3N3b3JkNCEiLCJjcmVhdGVkX2F0IjoiMjAyNS0wNS0wOVQwODo0Mzo1NS44NzJaIiwidXBkYXRlZF9hdCI6IjIwMjUtMDUtMDlUMDg6NDM6NTUuODcyWiIsInJvbGVzIjoidXNlciIsImlhdCI6MTc0Njc4MDIzNSwiZXhwIjoxNzQ3Mzg1MDM1fQ.HUoBhzxrVHPC2vTdEoFaTkMsTl6lbSCcqwWSCDM0dLw'; // Assuming you have access to the auth token
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -50,10 +49,10 @@ const PostDetailPage = () => {
       try {
         // Fetch post and comments
         const postResponse = await fetch(`http://localhost:3000/api/v1/posts/${id}`, {
-          headers: { Authorization: authToken },
+          headers: { Authorization: localStorage.getItem("authtoken") },
         });
         const commentsResponse = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`, {
-          headers: { Authorization: authToken },
+          headers: { Authorization: localStorage.getItem("authtoken") },
         });
 
         if (!postResponse.ok || !commentsResponse.ok) {
@@ -75,7 +74,7 @@ const PostDetailPage = () => {
         // Fetch user data with auth token
         const userPromises = userIds.map((id) =>
           fetch(`http://localhost:3000/api/v1/users/${id}`, {
-            headers: { Authorization: authToken },
+            headers: { Authorization: localStorage.getItem("authtoken") },
           }).then((res) => {
             if (!res.ok) {
               console.warn(`Failed to fetch user ${id}: ${res.status}`);
@@ -133,10 +132,8 @@ const PostDetailPage = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          // Include user
-          'user': userId,
           // include authorization as well
-          'authorization': authToken
+          'authorization': localStorage.getItem("authtoken")
         },
         body: JSON.stringify({
           text: newComment,
@@ -171,7 +168,7 @@ const PostDetailPage = () => {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'authorization': authToken
+          'authorization': localStorage.getItem("authtoken")
         },
         body: JSON.stringify({
           text: editText,
@@ -210,7 +207,7 @@ const PostDetailPage = () => {
         const response = await fetch(`http://localhost:3000/api/v1/comments/${commentId}`, {
           method: 'DELETE',
           headers: {
-            'authorization': authToken
+            'authorization': localStorage.getItem("authtoken")
           },
         });
 

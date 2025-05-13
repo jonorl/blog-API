@@ -2,6 +2,11 @@ const { Router } = require("express");
 const mainRouter = Router();
 const mainController = require("../controllers/mainController");
 const db = require("../db/queries");
+const { validateUser } = require("../controllers/formValidation");
+const { validateEmail } = require("../controllers/emailDuplicateValidation");
+const { validationResult } = require("express-validator");
+const bcrypt = require("bcryptjs");
+
 
 // Get all users
 mainRouter.get("/api/v1/users", async (req, res) => {
@@ -18,13 +23,27 @@ mainRouter.get("/api/v1/users/:id", async (req, res) => {
 // Create new user
 mainRouter.post(
   "/api/v1/users",
+  [...validateUser, ...validateEmail],
+
   async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const uniqueErrors = {};
+      errors.array().forEach((error) => {
+        if (!uniqueErrors[error.path]) {
+          uniqueErrors[error.path] = error;
+        }
+        // Return to the sign-up page with error messages
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    
     const newUser = await db.insertNewUser(
-      // replace headers with body once form is created
-      req.headers.firstname,
-      req.headers.lastname,
-      req.headers.email,
-      req.headers.password
+      req.body.firstName,
+      req.body.lastName,
+      req.body.email,
+      hashedPassword
     );
     req.user = newUser;
     next();
@@ -141,7 +160,7 @@ mainRouter.post(
   mainController.verifyToken,
   async (req, res) => {
     const createComment = await db.createComment(
-      req.headers.user,
+      req.user.user_id,
       req.body.text,
       req.params.postId
     );
@@ -154,10 +173,7 @@ mainRouter.put(
   "/api/v1/comments/:id",
   mainController.verifyToken,
   async (req, res) => {
-    const updateComment = await db.updateComment(
-      req.params.id,
-      req.body.text,
-    );
+    const updateComment = await db.updateComment(req.params.id, req.body.text);
     res.json({ message: "Comment updated", updateComment });
   }
 );

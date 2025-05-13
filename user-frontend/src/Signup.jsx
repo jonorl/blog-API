@@ -22,6 +22,7 @@ const SignUp = () => {
     };
 
     const handleSubmit = async () => {
+        console.log("formData: ", formData)
         setIsSubmitting(true);
         setErrors([]);
 
@@ -44,7 +45,7 @@ const SignUp = () => {
 
         try {
             // Simulate API call to /sign-up
-            const response = await fetch('/sign-up', {
+            const response = await fetch('http://localhost:3000/api/v1/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -54,11 +55,24 @@ const SignUp = () => {
                 const errorData = await response.json();
                 setErrors(errorData.errors || [{ msg: 'An error occurred during sign-up' }]);
             } else {
+                // Parse the response body as JSON
+                const data = await response.json();
+                console.log("data: ", data)
                 // Handle successful sign-up (e.g., redirect to login)
-                window.location.href = '/login';
+                if (data.token) {
+                    console.log("response.token", data.token)
+                    localStorage.setItem("authtoken", "bearer " + data.token);
+                    console.log("Token stored in localStorage");
+                } else {
+                    console.error("No token received");
+                }
+                window.location.href = '/';
             }
-        } catch (error) {
-            setErrors([{ msg: 'Network error, please try again later' }]);
+        }
+
+
+        catch (error) {
+            setErrors([{ msg: error }]);
         } finally {
             setIsSubmitting(false);
         }
