@@ -7,7 +7,6 @@ const { validateEmail } = require("../controllers/emailDuplicateValidation");
 const { validationResult } = require("express-validator");
 const bcrypt = require("bcryptjs");
 
-
 // Get all users
 mainRouter.get("/api/v1/users", async (req, res) => {
   const getUsers = await db.getAllUsers();
@@ -20,12 +19,15 @@ mainRouter.get("/api/v1/users/:id", async (req, res) => {
   res.json({ message: "User details: ", user });
 });
 
-
 // Verified route
-mainRouter.get("/api/v1/users/verified/:id",mainController.verifyToken, async (req, res) => {
-  const user = await db.readUser(req.user.user_id);
-  res.json({ message: "User details: ", user });
-});
+mainRouter.get(
+  "/api/v1/users/verified/:id",
+  mainController.verifyToken,
+  async (req, res) => {
+    const user = await db.readUser(req.user.user_id);
+    res.json({ message: "User details: ", user });
+  }
+);
 
 // Create new user
 mainRouter.post(
@@ -45,7 +47,7 @@ mainRouter.post(
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, 10);
-    
+
     const newUser = await db.insertNewUser(
       req.body.firstName,
       req.body.lastName,
@@ -59,6 +61,57 @@ mainRouter.post(
   (req, res) => {
     res.json({
       message: "New user created!: ",
+      user: req.user,
+      token: req.token,
+    });
+  }
+);
+
+// Login user
+
+mainRouter.post(
+  "/api/v1/users/login",
+  async (req, res, next) => {
+    try {
+      const { email, password } = req.body;
+
+      // Validate input
+      if (!email || !password) {
+        return res
+          .status(400)
+          .json({ errors: [{ msg: "Email and password are required" }] });
+      }
+
+      // Find the user in the database
+      const user = await db.getUserByEmail(email);
+      if (!user) {
+        return res
+          .status(401)
+          .json({ errors: [{ msg: "Invalid email or password" }] });
+      }
+
+      // Compare the provided password with the hashed password
+
+      const isMatch = await bcrypt.compare(password, user.password_hash);
+      if (!isMatch) {
+        return res
+          .status(401)
+          .json({ errors: [{ msg: "Invalid email or password" }] });
+      }
+
+      // Generate a JWT token
+      req.user = user;
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ errors: [{ msg: "Server error during login" }] });
+    }
+    next();
+  },
+  mainController.signToken,
+  (req, res) => {
+    // Send the token to the frontend
+    res.json({
+      message: "logged in successfully",
       user: req.user,
       token: req.token,
     });

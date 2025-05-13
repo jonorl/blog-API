@@ -113,7 +113,7 @@ const Index = () => {
                     <span>Sign up </span>
                     <UserRoundPlus className="h-4 w-4 mr-1" />
                   </a>
-                  <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                  <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
                     <span>Login </span>
                     <LogIn className="h-4 w-4 mr-1" />
                   </a>

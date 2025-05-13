@@ -7,11 +7,8 @@ import { Button } from '@/components/ui/button';
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
         email: '',
         password: '',
-        passwordConfirmation: '',
     });
     const [errors, setErrors] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,30 +21,16 @@ const SignUp = () => {
     };
 
     const handleSubmit = async () => {
-        console.log("formData: ", formData)
         setIsSubmitting(true);
         setErrors([]);
 
         // Basic client-side validation
         const newErrors = [];
-        if (!formData.firstName) newErrors.push({ msg: 'First name is required' });
-        if (!formData.lastName) newErrors.push({ msg: 'Last name is required' });
         if (!formData.email) newErrors.push({ msg: 'Email is required' });
         if (!formData.password) newErrors.push({ msg: 'Password is required' });
-        if (formData.password.length < 8) newErrors.push({ msg: 'Password must be at least 8 characters' });
-        if (formData.password !== formData.passwordConfirmation) {
-            newErrors.push({ msg: 'Passwords do not match' });
-        }
-
-        if (newErrors.length > 0) {
-            setErrors(newErrors);
-            setIsSubmitting(false);
-            return;
-        }
 
         try {
-            // Simulate API call to /sign-up
-            const response = await fetch('http://localhost:3000/api/v1/users', {
+            const response = await fetch('http://localhost:3000/api/v1/users/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -59,7 +42,6 @@ const SignUp = () => {
             } else {
                 // Parse the response body as JSON
                 const data = await response.json();
-                console.log("data: ", data)
                 // Handle successful sign-up (e.g., redirect to login)
                 if (data.token) {
                     console.log("response.token", data.token)
@@ -157,36 +139,10 @@ const SignUp = () => {
             <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
                 <Card className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg">
                     <CardHeader>
-                        <CardTitle className="text-3xl font-bold text-white text-center">Sign Up</CardTitle>
+                        <CardTitle className="text-3xl font-bold text-white text-center">Login</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-4">
-                            <div className="space-y-2">
-                                <Label htmlFor="firstName" className="text-slate-200">First Name</Label>
-                                <Input
-                                    id="firstName"
-                                    name="firstName"
-                                    placeholder="John"
-                                    type="text"
-                                    value={formData.firstName}
-                                    onChange={handleInputChange}
-                                    className="bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                                    disabled={isSubmitting}
-                                />
-                            </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="lastName" className="text-slate-200">Last Name</Label>
-                                <Input
-                                    id="lastName"
-                                    name="lastName"
-                                    placeholder="Doe"
-                                    type="text"
-                                    value={formData.lastName}
-                                    onChange={handleInputChange}
-                                    className="bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                                    disabled={isSubmitting}
-                                />
-                            </div>
                             <div className="space-y-2">
                                 <Label htmlFor="email" className="text-slate-200">Email</Label>
                                 <Input
@@ -214,20 +170,6 @@ const SignUp = () => {
                                     disabled={isSubmitting}
                                 />
                             </div>
-                            <div className="space-y-2">
-                                <Label htmlFor="passwordConfirmation" className="text-slate-200">Repeat Password</Label>
-                                <Input
-                                    id="passwordConfirmation"
-                                    name="passwordConfirmation"
-                                    type="password"
-                                    minLength={8}
-                                    required
-                                    value={formData.passwordConfirmation}
-                                    onChange={handleInputChange}
-                                    className="bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                                    disabled={isSubmitting}
-                                />
-                            </div>
                             {errors.length > 0 && (
                                 <ul className="text-red-400 text-sm space-y-1">
                                     {errors.map((error, index) => (
@@ -241,7 +183,7 @@ const SignUp = () => {
                                     className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
                                     disabled={isSubmitting}
                                 >
-                                    {isSubmitting ? 'Signing Up...' : 'Sign Up'}
+                                    {isSubmitting ? 'Logging in...' : 'Login'}
                                 </Button>
                             </div>
                         </div>

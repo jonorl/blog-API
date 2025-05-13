@@ -22,6 +22,15 @@ async function readUser(id) {
   return result;
 }
 
+async function getUserByEmail(email) {
+  const result = await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  return result;
+}
+
 async function createPost(user, title, text, isPublished) {
   const post = await prisma.posts.create({
     data: {
@@ -150,6 +159,7 @@ async function deleteComment(commentID) {
 module.exports = {
   insertNewUser,
   readUser,
+  getUserByEmail,
   createPost,
   editPost,
   deletePost,
