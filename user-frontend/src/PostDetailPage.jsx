@@ -51,7 +51,7 @@ const PostDetailPage = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/v1/users/${localStorage.getItem("authtoken")}`, {
+        const response = await fetch(`http://localhost:3000/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
           headers: { Authorization: token },
         });
 

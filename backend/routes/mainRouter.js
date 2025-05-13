@@ -14,13 +14,15 @@ mainRouter.get("/api/v1/users", async (req, res) => {
   res.json({ message: "List of all users: ", getUsers });
 });
 
-// Get user by ID
-// mainRouter.get("/api/v1/users/:id", async (req, res) => {
-//   const user = await db.readUser(req.params.id);
-//   res.json({ message: "User details: ", user });
-// });
+// Get user by ID - unverified
+mainRouter.get("/api/v1/users/:id", async (req, res) => {
+  const user = await db.readUser(req.params.id);
+  res.json({ message: "User details: ", user });
+});
 
-mainRouter.get("/api/v1/users/:id",mainController.verifyToken, async (req, res) => {
+
+// Verified route
+mainRouter.get("/api/v1/users/verified/:id",mainController.verifyToken, async (req, res) => {
   const user = await db.readUser(req.user.user_id);
   res.json({ message: "User details: ", user });
 });
