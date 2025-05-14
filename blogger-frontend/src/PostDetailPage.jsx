@@ -33,7 +33,6 @@ const PostDetailPage = () => {
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editText, setEditText] = useState('');
     const [editPostText, setEditPostText] = useState('');
-    const [isEditingPost, setIsEditingPost] = useState(false);
     const editorRef = useRef(null);
     const [currentUser, setCurrentUser] = useState(null);
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -210,45 +209,6 @@ const PostDetailPage = () => {
         fetchPostAndUsers();
     }, [id]);
 
-    const handleCommentSubmit = async (e) => {
-        e.preventDefault();
-        if (newComment.trim() === '') return;
-
-        setIsSubmitting(true);
-
-        try {
-            const response = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // include authorization as well
-                    'authorization': bearerToken.authToken
-                },
-                body: JSON.stringify({
-                    text: newComment,
-                })
-            });
-
-            if (response.ok) {
-                const createdComment = await response.json();
-                const constcreateCommentData = createdComment.createComment
-
-                const updatedComment = {
-                    ...constcreateCommentData,
-                    authorFirstName: currentUser?.first_name,
-                    authorLastName: currentUser?.last_name,
-                };
-
-                setComments((prev) => [...prev, updatedComment]);
-                setNewComment('');
-            }
-        } catch (error) {
-            console.error('Error adding comment:', error);
-        }
-        finally {
-            setIsSubmitting(false);
-        }
-    };
 
     const handleEditPost = (post) => {
         setEditingPostId(post.post_id);
@@ -263,7 +223,6 @@ const PostDetailPage = () => {
     const handleEdit = (comment) => {
         setEditingCommentId(comment.comment_id);
         setEditText(comment.comment_text);
-        setIsEditing(true);
     };
 
     const handleSavePostEdit = async (postId) => {
@@ -294,7 +253,6 @@ const PostDetailPage = () => {
                 });
                 setEditingPostId(null);
                 setEditPostText('');
-                setIsEditingPost(false);
             } else {
                 console.error('Error updating post:', response.status);
             }
@@ -329,7 +287,6 @@ const PostDetailPage = () => {
                 });
                 setEditingCommentId(null);
                 setEditText('');
-                setIsEditing(false);
             } else {
                 console.error('Error updating comment:', response.status);
             }
@@ -342,8 +299,12 @@ const PostDetailPage = () => {
 
     const handleCancelEdit = () => {
         setEditingCommentId(null);
+        setEditText('');
+    };
+    
+    const handleCancelPostEdit = () => {
+        setEditingPostId(null);
         setEditPostText('');
-        setIsEditing(false);
     };
 
     const handleDelete = async (commentId) => {
@@ -434,7 +395,7 @@ const PostDetailPage = () => {
                                     <Button size="sm" onClick={() => handleSavePostEdit(post.post_id)} disabled={isSubmitting}>
                                         Save
                                     </Button>
-                                    <Button size="sm" variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
+                                    <Button size="sm" variant="outline" onClick={handleCancelPostEdit} disabled={isSubmitting}>
                                         Cancel
                                     </Button>
                                 </div>
