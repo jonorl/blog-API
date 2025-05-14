@@ -347,6 +347,27 @@ const PostDetailPage = () => {
         setEditPostText('');
     };
 
+    const handleDeletePost = async (postId) => {
+        if (window.confirm('Are you sure you want to delete this post?')) {
+            try {
+                const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'authorization': bearerToken.authToken
+                    },
+                });
+
+                if (response.ok) {
+                    navigate("/")
+                } else {
+                    console.error('Error deleting comment:', response.status);
+                }
+            } catch (error) {
+                console.error('Error deleting comment:', error);
+            }
+        }
+    };
+
     const handleDelete = async (commentId) => {
         if (window.confirm('Are you sure you want to delete this comment?')) {
             try {
@@ -510,7 +531,7 @@ const PostDetailPage = () => {
                                     <Pencil className="h-5 w-5" />
                                 </button>
                                 <button
-                                    onClick={() => handleDelete(post.post_id)}
+                                    onClick={() => handleDeletePost(post.post_id)}
                                     className="text-muted-foreground hover:text-destructive focus:outline-none"
                                     aria-label="Delete post"
                                 >
