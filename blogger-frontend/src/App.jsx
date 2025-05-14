@@ -22,8 +22,6 @@ const Index = () => {
   const postTitleRef = useRef({});
   const [textareaHeight, setTextareaHeight] = useState('auto');
 
-
-
   const currentUser = {
     user_id: "5b8872a0-dae5-4a21-8a00-5861f8d446b5"
   };
@@ -109,7 +107,7 @@ const Index = () => {
     const postTextElement = postTextRef.current[post.post_id];
     if (postTextElement) {
       const height = postTextElement.offsetHeight;
-      setTextareaHeight(`${height + 150}px`); // Set height based on non-editing <div>
+      setTextareaHeight(`${height + 150}px`); 
     }
   };
 
