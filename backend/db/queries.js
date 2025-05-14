@@ -31,13 +31,13 @@ async function getUserByEmail(email) {
   return result;
 }
 
-async function createPost(user, title, text, isPublished) {
+async function createPost(user, title, text, published) {
   const post = await prisma.posts.create({
     data: {
       author_id: user,
       title: title,
       post_text: text,
-      is_published: isPublished,
+      is_published: published,
     },
   });
   return post;

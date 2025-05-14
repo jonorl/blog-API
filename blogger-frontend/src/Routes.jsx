@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "./App";
 import PostDetailPage from "./PostDetailPage";
+import New from "./New";
 // import Signup from "./Signup"
 // import Login from "./Login"
 
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
     {
         path: "/posts/:id",
         element: < PostDetailPage />
+    },
+        {
+        path: "/new/",
+        element: < New />
     },
 /*         {
         path: "/signup/",

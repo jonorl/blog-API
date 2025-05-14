@@ -11,15 +11,14 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input"; // Added Input component
 import {
-    BookOpen,
     Calendar,
     Trash2,
     Pencil,
     LogIn,
     LogOut,
-    Rss,
-    UserRoundPlus,
+    NotebookPen,
 } from "lucide-react";
 import { Editor } from '@tinymce/tinymce-react';
 import sanitizeHtml from 'sanitize-html';
@@ -28,19 +27,20 @@ const PostDetailPage = () => {
     const { id } = useParams();
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editText, setEditText] = useState('');
     const [editPostText, setEditPostText] = useState('');
+    const [editingTitle, setEditingTitle] = useState(false); // New state for title editing
+    const [editTitleText, setEditTitleText] = useState(''); // New state for title text
     const editorRef = useRef(null);
-    const [currentUser, setCurrentUser] = useState(null);
+    // const [currentUser, setCurrentUser] = useState(null);
     const [isDarkMode, setIsDarkMode] = useState(false);
     const postTextRef = useRef({});
     const [textareaHeight, setTextareaHeight] = useState('auto');
     const [editingPostId, setEditingPostId] = useState(null);
 
-    const User = {
+    const currentUser = {
         user_id: "5b8872a0-dae5-4a21-8a00-5861f8d446b5"
     };
     const bearerToken = {
@@ -90,12 +90,6 @@ const PostDetailPage = () => {
         }
     }, []);
 
-    const toggleTheme = () => {
-        const newTheme = !isDarkMode;
-        setIsDarkMode(newTheme);
-        localStorage.setItem('theme', newTheme ? 'dark' : 'light');
-    };
-
     useEffect(() => {
         const fetchCurrentUser = async () => {
             try {
@@ -124,7 +118,6 @@ const PostDetailPage = () => {
     }, []);
 
     useEffect(() => {
-
         const fetchPostAndUsers = async () => {
             try {
                 // Fetch post and comments
@@ -209,6 +202,53 @@ const PostDetailPage = () => {
         fetchPostAndUsers();
     }, [id]);
 
+    // Handle title edit
+    const handleEditTitle = () => {
+        setEditingTitle(true);
+        setEditTitleText(post.title);
+    };
+
+    // Handle save title
+    const handleSaveTitle = async () => {
+        if (editTitleText.trim() === '') return;
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`http://localhost:3000/api/v1/posts/${post.post_id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'authorization': bearerToken.authToken
+                },
+                body: JSON.stringify({
+                    title: editTitleText,
+                }),
+            });
+
+            if (response.ok) {
+                const updatedPost = await response.json();
+                setPost((prevPost) => {
+                    if (!prevPost) return prevPost;
+                    return { 
+                        ...prevPost, 
+                        title: updatedPost.update.title || editTitleText // Use the response if available, fallback to our input
+                    };
+                });
+                setEditingTitle(false);
+            } else {
+                console.error('Error updating title:', response.status);
+            }
+        } catch (error) {
+            console.error('Error updating title:', error);
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    // Handle cancel title edit
+    const handleCancelTitleEdit = () => {
+        setEditingTitle(false);
+        setEditTitleText('');
+    };
 
     const handleEditPost = (post) => {
         setEditingPostId(post.post_id);
@@ -301,7 +341,7 @@ const PostDetailPage = () => {
         setEditingCommentId(null);
         setEditText('');
     };
-    
+
     const handleCancelPostEdit = () => {
         setEditingPostId(null);
         setEditPostText('');
@@ -335,10 +375,33 @@ const PostDetailPage = () => {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-                <h1 className="text-3xl font-bold">Blogger Access</h1>
-                <Button onClick={toggleTheme} variant="outline">
-                    {isDarkMode ? 'Switch to Light' : 'Switch to Dark'}
-                </Button>
+                <a href={`/`} className="text-3xl font-bold">Blogger Access</a>
+                <nav className="hidden md:flex space-x-8">
+                    {currentUser ? (
+                        <>
+                            <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
+                                <span>New Post&nbsp; </span>
+                                <NotebookPen className="h-4 w-4 mr-1" />
+                            </a>
+                            <a href="#"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleLogout();
+                                }} className="text-slate-300 hover:text-blue-400 flex items-center">
+                                <span>Logout&nbsp; </span>
+                                <LogOut className="h-4 w-4 mr-1" />
+                            </a>
+                        </>
+                    ) : (
+                        <>
+                            <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
+                                <span>Login&nbsp; </span>
+                                <LogIn className="h-4 w-4 mr-1" />
+                            </a>
+
+                        </>
+                    )}
+                </nav>
             </header>
 
             {/* Main Content */}
@@ -347,9 +410,39 @@ const PostDetailPage = () => {
                     {/* Blog Post */}
                     <Card className="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm p-6 hover:shadow-lg transition-shadow rounded-lg">
                         <CardHeader className="pb-0">
-                            <CardTitle className="text-3xl font-bold text-white text-center">
-                                {post.title}
-                            </CardTitle>
+                            {editingTitle ? (
+                                <div className="flex flex-col space-y-2">
+                                    <Input
+                                        value={editTitleText}
+                                        onChange={(e) => setEditTitleText(e.target.value)}
+                                        className="text-2xl font-bold bg-slate-700 border-slate-600 text-white"
+                                        placeholder="Enter post title"
+                                    />
+                                    <div className="flex justify-end space-x-2 mt-2">
+                                        <Button size="sm" onClick={handleSaveTitle} disabled={isSubmitting || !editTitleText.trim()}>
+                                            Save
+                                        </Button>
+                                        <Button size="sm" variant="outline" onClick={handleCancelTitleEdit} disabled={isSubmitting}>
+                                            Cancel
+                                        </Button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center">
+                                    <CardTitle className="text-3xl font-bold text-white text-center">
+                                        {post.title}
+                                    </CardTitle>
+                                    {post.author_id === currentUser.user_id && (
+                                        <button
+                                            onClick={handleEditTitle}
+                                            className="ml-2 text-muted-foreground hover:text-primary focus:outline-none"
+                                            aria-label="Edit title"
+                                        >
+                                            <Pencil className="h-5 w-5" />
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                             <CardDescription className="text-slate-400 flex items-center justify-center gap-4 mt-2 flex-wrap">
                                 <div className="flex items-center">
                                     <span>{post.authorFirstName + " " + post.authorLastName} </span>
@@ -407,7 +500,7 @@ const PostDetailPage = () => {
                                 ref={(el) => (postTextRef.current[post.post_id] = el)}
                             />
                         )}
-                        {post.author_id === User.user_id && (
+                        {post.author_id === currentUser.user_id && (
                             <div className="flex flex-row items-center justify-start space-x-5">
                                 <button
                                     onClick={() => handleEditPost(post)}

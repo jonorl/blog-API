@@ -103,7 +103,7 @@ const Index = () => {
                       e.preventDefault();
                       handleLogout();
                     }} className="text-slate-300 hover:text-blue-400 flex items-center">
-                    <span>Logout </span>
+                    <span>Logout&nbsp; </span>
                     <LogOut className="h-4 w-4 mr-1" />
                   </a>
                 </>
@@ -114,7 +114,7 @@ const Index = () => {
                     <UserRoundPlus className="h-4 w-4 mr-1" />
                   </a>
                   <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
-                    <span>Login </span>
+                    <span>Login&nbsp; </span>
                     <LogIn className="h-4 w-4 mr-1" />
                   </a>
                 </>

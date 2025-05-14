@@ -1,12 +1,14 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
-import { Trash2, Pencil } from "lucide-react";
 import { Editor } from '@tinymce/tinymce-react';
+import { Trash2, Pencil, LogIn, LogOut, NotebookPen } from "lucide-react";
 import sanitizeHtml from 'sanitize-html';
 
 const Index = () => {
@@ -107,7 +109,7 @@ const Index = () => {
     const postTextElement = postTextRef.current[post.post_id];
     if (postTextElement) {
       const height = postTextElement.offsetHeight;
-      setTextareaHeight(`${height + 150}px`); 
+      setTextareaHeight(`${height + 150}px`);
     }
   };
 
@@ -264,10 +266,13 @@ const Index = () => {
     }
   };
 
-  const toggleTheme = () => {
-    const newTheme = !isDarkMode;
-    setIsDarkMode(newTheme);
-    localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("authtoken");
+    // setCurrentUser(null);
+    navigate("/");
   };
 
   if (!posts) return <p>Loading...</p>;
@@ -275,10 +280,33 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-        <h1 className="text-3xl font-bold">Blogger Access</h1>
-        <Button onClick={toggleTheme} variant="outline">
-          {isDarkMode ? 'Switch to Light' : 'Switch to Dark'}
-        </Button>
+        <a href={`/`} className="text-3xl font-bold">Blogger Access</a>
+        <nav className="hidden md:flex space-x-8">
+          {currentUser ? (
+            <>
+              <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>New Post&nbsp; </span>
+                <NotebookPen className="h-4 w-4 mr-1" />
+              </a>
+              <a href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLogout();
+                }} className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Logout&nbsp; </span>
+                <LogOut className="h-4 w-4 mr-1" />
+              </a>
+            </>
+          ) : (
+            <>
+              <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
+                <span>Login&nbsp; </span>
+                <LogIn className="h-4 w-4 mr-1" />
+              </a>
+
+            </>
+          )}
+        </nav>
       </header>
 
       <main className="max-w-5xl mx-auto p-6 space-y-8">
@@ -313,12 +341,14 @@ const Index = () => {
                 </div>
               ) : (
                 <>
-                  <h2
-                    className="text-2xl font-semibold"
+                  <a
+                    href={`/posts/${post.post_id}`}
+                    className="text-2xl font-semibold hover:underline"
                     ref={(el) => (postTitleRef.current[post.post_id] = el)}
                   >
                     {post.title}
-                  </h2>
+                  </a>
+
                   {post.author_id === currentUser.user_id && (
                     <div className="flex items-center space-x-2">
                       <button
