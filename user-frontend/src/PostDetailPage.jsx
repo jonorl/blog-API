@@ -453,7 +453,7 @@ const PostDetailPage = () => {
               <span className="ml-2 text-xl font-bold text-white">Blog API project</span>
             </div>
             <div className="text-slate-400 text-sm">
-              © 2025 Blog API Project. jonorl@gmail.com
+              © 2025 Blog API Project. 8hqczgwx8@mozmail.com
             </div>
           </div>
         </div>

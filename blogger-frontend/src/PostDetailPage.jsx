@@ -439,7 +439,7 @@ const PostDetailPage = () => {
                             <Info className="h-5 w-5" />
                             <p className="font-medium">Become a blogger to edit messages and add new posts</p>
                         </div>
-                        <div className="mt-4 flex items-center justify-center space-x-2">
+                        <div className="flex items-center justify-center space-x-2">
                             <Switch
                                 checked={isAdmin}
                                 onCheckedChange={handleMakeAdmin}
@@ -626,7 +626,7 @@ const PostDetailPage = () => {
             </main>
 
             <footer className="max-w-5xl mx-auto p-6 border-t border-border text-center text-sm text-muted-foreground">
-                © 2025 Blogger CMS / Blog API. jonorl@gmail.com.
+                © 2025 Blogger CMS / Blog API. 8hqczgwx8@mozmail.com.
             </footer>
         </div>
     );

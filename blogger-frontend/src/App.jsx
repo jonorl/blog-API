@@ -539,7 +539,7 @@ const Index = () => {
       </main>
 
       <footer className="max-w-5xl mx-auto p-6 border-t border-border text-center text-sm text-muted-foreground">
-        © 2025 Blogger CMS / Blog API. jonorl@gmail.com.
+        © 2025 Blogger CMS / Blog API. 8hqczgwx8@mozmail.com.
       </footer>
     </div>
   );
