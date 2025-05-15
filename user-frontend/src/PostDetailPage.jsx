@@ -317,7 +317,7 @@ const PostDetailPage = () => {
                 </>
               )}
 
-              <a href="http://127.0.0.1:5174/" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <a href="https://bloggers-frontend.netlify.app/" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
               </a>

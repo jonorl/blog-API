@@ -49,7 +49,7 @@ const Index = () => {
           return;
         }
         setBearerToken(token);
-        const response = await fetch(`http://localhost:3000/api/v1/usersverified/`, {
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersverified/`, {
           method: 'GET',
           headers: { authorization: token },
         });
@@ -71,7 +71,7 @@ const Index = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/posts`);
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts`);
         if (response.ok) {
           const data = await response.json();
           const initialPosts = data.getPosts;
@@ -79,10 +79,10 @@ const Index = () => {
           const postsWithDetails = await Promise.all(
             initialPosts.map(async (post) => {
               const commentsResponse = await fetch(
-                `http://localhost:3000/api/v1/posts/${post.post_id}/comments`
+                `https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${post.post_id}/comments`
               );
               const userResponse = await fetch(
-                `http://localhost:3000/api/v1/users/${post.author_id}`
+                `https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${post.author_id}`
               );
               const commentsData = await commentsResponse.json();
               const userData = await userResponse.json();
@@ -129,7 +129,7 @@ const Index = () => {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
+      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const Index = () => {
     if (editTitle.trim() === '') return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
+      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${postId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -221,7 +221,7 @@ const Index = () => {
       const newIsAdmin = !isAdmin;
       const newRole = newIsAdmin ? "blogger" : "user";
 
-      const response = await fetch(`http://localhost:3000/api/v1/users/${currentUser.user_id}/`, {
+      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${currentUser.user_id}/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -250,7 +250,7 @@ const Index = () => {
     const newPublishStatus = !post.is_published;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/posts/${post.post_id}`, {
+      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${post.post_id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -291,7 +291,7 @@ const Index = () => {
   const handleDeletePost = async (postId) => {
     if (window.confirm('Are you sure you want to delete this post?')) {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${postId}`, {
           method: 'DELETE',
           headers: {
             'authorization': bearerToken
