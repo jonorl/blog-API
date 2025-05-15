@@ -61,7 +61,7 @@ const PostDetailPage = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
           headers: { Authorization: token },
         });
 
@@ -84,10 +84,10 @@ const PostDetailPage = () => {
     const fetchPostAndUsers = async () => {
       try {
         // Fetch post and comments
-        const postResponse = await fetch(`http://localhost:3000/api/v1/posts/${id}`, {
+        const postResponse = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}`, {
           headers: { Authorization: localStorage.getItem("authtoken") },
         });
-        const commentsResponse = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`, {
+        const commentsResponse = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}/comments`, {
           headers: { Authorization: localStorage.getItem("authtoken") },
         });
 
@@ -109,7 +109,7 @@ const PostDetailPage = () => {
 
         // Fetch user data with auth token
         const userPromises = userIds.map((id) =>
-          fetch(`http://localhost:3000/api/v1/users/${id}`, {
+          fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${id}`, {
             headers: { Authorization: localStorage.getItem("authtoken") },
           }).then((res) => {
             if (!res.ok) {
@@ -172,7 +172,7 @@ const PostDetailPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/posts/${id}/comments`, {
+      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -215,7 +215,7 @@ const PostDetailPage = () => {
     if (editText.trim() === '') return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/comments/${commentId}`, {
+      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/comments/${commentId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -255,7 +255,7 @@ const PostDetailPage = () => {
   const handleDelete = async (commentId) => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/comments/${commentId}`, {
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/comments/${commentId}`, {
           method: 'DELETE',
           headers: {
             'authorization': localStorage.getItem("authtoken")

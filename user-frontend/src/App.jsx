@@ -16,7 +16,7 @@ const Index = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/v1/usersverified/`, {
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersverified/`, {
           headers: { Authorization: token },
         });
 
@@ -38,7 +38,7 @@ const Index = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/posts`);
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts`);
 
         if (response.ok) {
           const data = await response.json();
@@ -47,10 +47,10 @@ const Index = () => {
           const postsWithDetails = await Promise.all(
             initialPosts.map(async (post) => {
               const commentsResponse = await fetch(
-                `http://localhost:3000/api/v1/posts/${post.post_id}/comments`
+                `https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${post.post_id}/comments`
               );
               const userResponse = await fetch(
-                `http://localhost:3000/api/v1/users/${post.author_id}`
+                `https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${post.author_id}`
               );
               const commentsData = await commentsResponse.json();
               const userData = await userResponse.json();

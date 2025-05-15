@@ -47,7 +47,7 @@ const SignUp = () => {
 
         try {
             // Simulate API call to /sign-up
-            const response = await fetch('http://localhost:3000/api/v1/users', {
+            const response = await fetch('https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -89,7 +89,7 @@ const SignUp = () => {
                     return;
                 }
 
-                const response = await fetch(`http://localhost:3000/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
+                const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
                     headers: { Authorization: token },
                 });
 
