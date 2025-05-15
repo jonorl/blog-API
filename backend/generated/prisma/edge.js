@@ -183,17 +183,16 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
-  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": null
+        "value": "postgres://koyeb-adm:npg_XtAzGOI69xiU@ep-steep-mud-a2xg238y.eu-central-1.pg.koyeb.app/koyebdb?sslmode=require&pgbouncer=true&connect_timeout=10"
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel users {\n  user_id       String     @id @default(uuid()) @db.Uuid\n  first_name    String?    @db.VarChar(50)\n  last_name     String?    @db.VarChar(50)\n  email         String     @unique @db.VarChar(255)\n  password_hash String\n  created_at    DateTime?  @default(now()) @db.Timestamp(6)\n  updated_at    DateTime?  @updatedAt @db.Timestamp(6)\n  posts         posts[]\n  comments      comments[]\n  roles         roles?     @default(user)\n}\n\nmodel posts {\n  post_id            Int        @id @default(autoincrement())\n  author_id          String     @db.Uuid\n  post_text          String\n  message_created_at DateTime?  @default(now()) @db.Timestamp(6)\n  title              String\n  is_published       Boolean    @default(false)\n  comments           comments[]\n  author             users      @relation(fields: [author_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel comments {\n  comment_id         Int       @id @default(autoincrement())\n  user_id            String    @db.Uuid\n  comment_text       String\n  comment_created_at DateTime? @default(now()) @db.Timestamp(6)\n  post_id            Int\n  posts              posts     @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)\n  users              users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nenum roles {\n  blogger\n  user\n}\n",
-  "inlineSchemaHash": "08589ad6d2e996cc437604df22016101cc43b2f39d0cb8b7ac80f7481e4f2959",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma\"\n}\n\ndatasource db {\n  provider  = \"postgresql\"\n  url       = env(\"DATABASE_URL\")\n  directUrl = env(\"DIRECT_URL\")\n}\n\nmodel users {\n  user_id       String     @id @default(uuid()) @db.Uuid\n  first_name    String?    @db.VarChar(50)\n  last_name     String?    @db.VarChar(50)\n  email         String     @unique @db.VarChar(255)\n  password_hash String\n  created_at    DateTime?  @default(now()) @db.Timestamp(6)\n  updated_at    DateTime?  @updatedAt @db.Timestamp(6)\n  posts         posts[]\n  comments      comments[]\n  roles         roles?     @default(user)\n}\n\nmodel posts {\n  post_id            Int        @id @default(autoincrement())\n  author_id          String     @db.Uuid\n  post_text          String\n  message_created_at DateTime?  @default(now()) @db.Timestamp(6)\n  title              String\n  is_published       Boolean    @default(false)\n  comments           comments[]\n  author             users      @relation(fields: [author_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nmodel comments {\n  comment_id         Int       @id @default(autoincrement())\n  user_id            String    @db.Uuid\n  comment_text       String\n  comment_created_at DateTime? @default(now()) @db.Timestamp(6)\n  post_id            Int\n  posts              posts     @relation(fields: [post_id], references: [post_id], onDelete: Cascade, onUpdate: NoAction)\n  users              users     @relation(fields: [user_id], references: [user_id], onDelete: Cascade, onUpdate: NoAction)\n}\n\nenum roles {\n  blogger\n  user\n}\n",
+  "inlineSchemaHash": "34e87e7c2f5505492fce20192b2b5f1b1de70ecc18567546a6891f41a8116898",
   "copyEngine": true
 }
 config.dirname = '/'
