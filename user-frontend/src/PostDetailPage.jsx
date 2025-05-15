@@ -61,7 +61,7 @@ const PostDetailPage = () => {
           return;
         }
 
-        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
+        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersVerified/`, {
           headers: { Authorization: token },
         });
 
