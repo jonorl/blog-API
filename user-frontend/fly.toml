@@ -16,6 +16,11 @@ primary_region = 'jnb'
   min_machines_running = 0
   processes = ['app']
 
+[[statics]]
+guest_path = "/dist"       # Where your built files are (Vite defaults to "dist")
+url_prefix = "/"          # Handle all routes
+rewrite = "/index.html"   # Always serve index.html
+
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'
