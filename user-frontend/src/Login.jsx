@@ -109,18 +109,18 @@ const SignUp = () => {
                                     <span>Hello {currentUser.first_name}&nbsp; </span>
 
                                     <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
-                                        <span>Logout </span>
+                                        <span>Logout&nbsp; </span>
                                         <LogOut className="h-4 w-4 mr-1" />
                                     </a>
                                 </>
                             ) : (
                                 <>
                                     <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
-                                        <span>Sign up </span>
+                                        <span>Sign up&nbsp; </span>
                                         <UserRoundPlus className="h-4 w-4 mr-1" />
                                     </a>
                                     <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
-                                        <span>Login </span>
+                                        <span>Login&nbsp; </span>
                                         <LogIn className="h-4 w-4 mr-1" />
                                     </a>
                                 </>

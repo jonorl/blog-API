@@ -16,7 +16,7 @@ const Index = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:3000/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
+        const response = await fetch(`http://localhost:3000/api/v1/usersverified/`, {
           headers: { Authorization: token },
         });
 

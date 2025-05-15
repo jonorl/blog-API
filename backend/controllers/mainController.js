@@ -12,12 +12,10 @@ function verifyToken(req, res, next) {
     const bearer = bearerHeader.split(" ");
     const bearerToken = bearer[1];
     req.token = bearerToken;
-    console.log(bearerToken);
     jwt.verify(req.token, process.env.SECRET, (err, authData) => {
       if (err) {
         console.log(err);
       } else {
-        console.log(authData);
         req.user = authData
       }
     });

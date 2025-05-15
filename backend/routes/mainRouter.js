@@ -1,37 +1,37 @@
-const { Router } = require("express");
+const { Router } = require('express');
 const mainRouter = Router();
-const mainController = require("../controllers/mainController");
-const db = require("../db/queries");
-const { validateUser } = require("../controllers/formValidation");
-const { validateEmail } = require("../controllers/emailDuplicateValidation");
-const { validationResult } = require("express-validator");
-const bcrypt = require("bcryptjs");
+const mainController = require('../controllers/mainController');
+const db = require('../db/queries');
+const { validateUser } = require('../controllers/formValidation');
+const { validateEmail } = require('../controllers/emailDuplicateValidation');
+const { validationResult } = require('express-validator');
+const bcrypt = require('bcryptjs');
 
 // Get all users
-mainRouter.get("/api/v1/users", async (req, res) => {
+mainRouter.get('/api/v1/users', async (req, res) => {
   const getUsers = await db.getAllUsers();
-  res.json({ message: "List of all users: ", getUsers });
+  res.json({ message: 'List of all users: ', getUsers });
 });
 
 // Get user by ID - unverified
-mainRouter.get("/api/v1/users/:id", async (req, res) => {
+mainRouter.get('/api/v1/users/:id', async (req, res) => {
   const user = await db.readUser(req.params.id);
-  res.json({ message: "User details: ", user });
+  res.json({ message: 'User details: ', user });
 });
 
 // Verified route
 mainRouter.get(
-  "/api/v1/users/verified/:id",
+  '/api/v1/usersverified/',
   mainController.verifyToken,
   async (req, res) => {
     const user = await db.readUser(req.user.user_id);
-    res.json({ message: "User details: ", user });
+    res.json({ message: 'User details: ', user });
   }
 );
 
 // Create new user
 mainRouter.post(
-  "/api/v1/users",
+  '/api/v1/users',
   [...validateUser, ...validateEmail],
 
   async (req, res, next) => {
@@ -60,7 +60,7 @@ mainRouter.post(
   mainController.signToken,
   (req, res) => {
     res.json({
-      message: "New user created!: ",
+      message: 'New user created!: ',
       user: req.user,
       token: req.token,
     });
@@ -70,7 +70,7 @@ mainRouter.post(
 // Login user
 
 mainRouter.post(
-  "/api/v1/users/login",
+  '/api/v1/users/login',
   async (req, res, next) => {
     try {
       const { email, password } = req.body;
@@ -79,7 +79,7 @@ mainRouter.post(
       if (!email || !password) {
         return res
           .status(400)
-          .json({ errors: [{ msg: "Email and password are required" }] });
+          .json({ errors: [{ msg: 'Email and password are required' }] });
       }
 
       // Find the user in the database
@@ -87,7 +87,7 @@ mainRouter.post(
       if (!user) {
         return res
           .status(401)
-          .json({ errors: [{ msg: "Invalid email or password" }] });
+          .json({ errors: [{ msg: 'Invalid email or password' }] });
       }
 
       // Compare the provided password with the hashed password
@@ -96,14 +96,14 @@ mainRouter.post(
       if (!isMatch) {
         return res
           .status(401)
-          .json({ errors: [{ msg: "Invalid email or password" }] });
+          .json({ errors: [{ msg: 'Invalid email or password' }] });
       }
 
       // Generate a JWT token
       req.user = user;
     } catch (error) {
-      console.error("Login error:", error);
-      res.status(500).json({ errors: [{ msg: "Server error during login" }] });
+      console.error('Login error:', error);
+      res.status(500).json({ errors: [{ msg: 'Server error during login' }] });
     }
     next();
   },
@@ -111,7 +111,7 @@ mainRouter.post(
   (req, res) => {
     // Send the token to the frontend
     res.json({
-      message: "logged in successfully",
+      message: 'logged in successfully',
       user: req.user,
       token: req.token,
     });
@@ -120,46 +120,47 @@ mainRouter.post(
 
 // Update a user
 mainRouter.put(
-  "/api/v1/users/:id",
+  '/api/v1/users/:id',
   mainController.verifyToken,
   async (req, res) => {
     const editUser = await db.updateUser(
       req.params.id,
-      req.headers.firstname,
-      req.headers.lastname,
-      req.headers.email
+      req.body.firstname,
+      req.body.lastname,
+      req.body.email,
+      req.body.roles
     );
-    res.json({ message: "User updated successfully!", editUser });
+    res.json({ message: 'User updated successfully!', editUser });
   }
 );
 
 // Delete a user
 mainRouter.delete(
-  "/api/v1/users/:id",
+  '/api/v1/users/:id',
   mainController.verifyToken,
   async (req, res) => {
     const deleteUser = await db.deleteUser(req.params.id);
-    res.json({ message: "User deleted successfully", deleteUser });
+    res.json({ message: 'User deleted successfully', deleteUser });
   }
 );
 
 // Posts Routes
 
 // Get all posts
-mainRouter.get("/api/v1/posts", async (req, res) => {
+mainRouter.get('/api/v1/posts', async (req, res) => {
   const getPosts = await db.getAllPosts();
-  res.json({ message: "List of all posts: ", getPosts });
+  res.json({ message: 'List of all posts: ', getPosts });
 });
 
 // Get all posts by ID
-mainRouter.get("/api/v1/posts/:id", async (req, res) => {
+mainRouter.get('/api/v1/posts/:id', async (req, res) => {
   const post = await db.readPost(req.params.id);
-  res.json({ message: "Post details: ", post });
+  res.json({ message: 'Post details: ', post });
 });
 
 // Create new post
 mainRouter.post(
-  "/api/v1/posts",
+  '/api/v1/posts',
   mainController.verifyToken,
   async (req, res) => {
     const newPost = await db.createPost(
@@ -169,13 +170,13 @@ mainRouter.post(
       req.body.publish,
       true
     );
-    res.json({ message: "Blog posting successful", newPost });
+    res.json({ message: 'Blog posting successful', newPost });
   }
 );
 
 // Update post
 mainRouter.put(
-  "/api/v1/posts/:id",
+  '/api/v1/posts/:id',
   mainController.verifyToken,
   async (req, res) => {
     const update = await db.editPost(
@@ -186,7 +187,7 @@ mainRouter.put(
       false
     );
     res.json({
-      message: "Post edited successufly",
+      message: 'Post edited successufly',
       update,
     });
   }
@@ -194,31 +195,31 @@ mainRouter.put(
 
 // Delete post
 mainRouter.delete(
-  "/api/v1/posts/:id",
+  '/api/v1/posts/:id',
   mainController.verifyToken,
   async (req, res) => {
     const deletePost = await db.deletePost(req.params.id);
-    res.json({ message: "Post deleted successfuly", deletePost });
+    res.json({ message: 'Post deleted successfuly', deletePost });
   }
 );
 
 // Comments route
 
 // Get comments for a post
-mainRouter.get("/api/v1/posts/:postId/comments", async (req, res) => {
+mainRouter.get('/api/v1/posts/:postId/comments', async (req, res) => {
   const showPostComments = await db.showPostComments(req.params.postId);
-  res.json({ message: "Showing all comments for post", showPostComments });
+  res.json({ message: 'Showing all comments for post', showPostComments });
 });
 
 // Get a specific comment
-mainRouter.get("/api/v1/comments/:id", async (req, res) => {
+mainRouter.get('/api/v1/comments/:id', async (req, res) => {
   const showSpecificComment = await db.showSpecificComment(req.params.id);
-  res.json({ message: "Showing specific comment: ", showSpecificComment });
+  res.json({ message: 'Showing specific comment: ', showSpecificComment });
 });
 
 // Add a comment to a post
 mainRouter.post(
-  "/api/v1/posts/:postId/comments",
+  '/api/v1/posts/:postId/comments',
   mainController.verifyToken,
   async (req, res) => {
     const createComment = await db.createComment(
@@ -226,27 +227,27 @@ mainRouter.post(
       req.body.text,
       req.params.postId
     );
-    res.json({ message: "comment added successfully!", createComment });
+    res.json({ message: 'comment added successfully!', createComment });
   }
 );
 
 // Update a comment
 mainRouter.put(
-  "/api/v1/comments/:id",
+  '/api/v1/comments/:id',
   mainController.verifyToken,
   async (req, res) => {
     const updateComment = await db.updateComment(req.params.id, req.body.text);
-    res.json({ message: "Comment updated", updateComment });
+    res.json({ message: 'Comment updated', updateComment });
   }
 );
 
 // Delete a comment
 mainRouter.delete(
-  "/api/v1/comments/:id",
+  '/api/v1/comments/:id',
   mainController.verifyToken,
   async (req, res) => {
     const deleteComment = await db.deleteComment(req.params.id);
-    res.json({ message: "Comment deleted successfully: ", deleteComment });
+    res.json({ message: 'Comment deleted successfully: ', deleteComment });
   }
 );
 

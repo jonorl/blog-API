@@ -71,7 +71,8 @@ async function getAllUsers() {
   return getUsers;
 }
 
-async function updateUser(userID, firstName, lastName, email) {
+async function updateUser(userID, firstName, lastName, email, roles) {
+  console.log("aqui")
   const editUser = await prisma.users.update({
     where: {
       user_id: userID,
@@ -80,8 +81,10 @@ async function updateUser(userID, firstName, lastName, email) {
       first_name: firstName,
       last_name: lastName,
       email: email,
+      roles: roles,
     },
   });
+  console.log(editUser)
   return editUser;
 }
 
