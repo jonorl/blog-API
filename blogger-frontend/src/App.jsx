@@ -329,7 +329,7 @@ const Index = () => {
                 <Label htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
               </div>
               <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>New Post </span>
+                <span>New Post&nbsp; </span>
                 <NotebookPen className="h-4 w-4 mr-1" />
               </a>
               <a href="/logout"
@@ -337,14 +337,14 @@ const Index = () => {
                   e.preventDefault();
                   handleLogout();
                 }} className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Logout </span>
+                <span>Logout&nbsp; </span>
                 <LogOut className="h-4 w-4 mr-1" />
               </a>
             </>
           ) : (
             <>
               <a href="/login" className=" flex items-center">
-                <span>Login </span>
+                <span>Login&nbsp; </span>
                 <LogIn className="h-4 w-4 mr-1" />
               </a>
             </>
@@ -482,7 +482,7 @@ const Index = () => {
                 </div>
               ) : (
                 <div
-                  className="mb-4 text-muted-foreground"
+                  className=" text-muted-foreground"
                   dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.post_text) }}
                   ref={(el) => (postTextRef.current[post.post_id] = el)}
                 />
@@ -506,12 +506,10 @@ const Index = () => {
                   </button>
                 </div>
               )}
-              <Separator className="my-4" />
-              <div className="pt-4">
+              <Separator className="my-1" />
                 <div className="flex items-center text-slate-400">
                   <span>{post.commentsCount || 0} Comments</span>
                 </div>
-              </div>
               <div className="flex items-center space-x-4">
                 <div>
                   <p className="font-medium">{post.authorFirstName} {post.authorLastName}</p>
