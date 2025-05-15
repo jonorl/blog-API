@@ -166,7 +166,7 @@ const Login = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <a href="/register" className="text-primary hover:underline">
+            <a href="http://127.0.0.1:5173/signup" className="text-primary hover:underline">
               Register here
             </a>
           </p>

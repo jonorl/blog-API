@@ -24,19 +24,11 @@ const Index = () => {
   const [textareaHeight, setTextareaHeight] = useState('auto');
   const [currentUser, setCurrentUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [currentUserRole, setCurrentUserRole] = useState('')
-  const [bearerToken, setBearerToken] = useState('')
+  const [bearerToken, setBearerToken] = useState('');
 
-  const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY
+  const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
 
   document.documentElement.classList.add('dark');
-
-  // const currentUser = {
-  //   user_id: "5b8872a0-dae5-4a21-8a00-5861f8d446b5"
-  // };
-  // const bearerToken = {
-  //   authToken: "bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiNWI4ODcyYTAtZGFlNS00YTIxLThhMDAtNTg2MWY4ZDQ0NmI1IiwiZmlyc3RfbmFtZSI6IkpvbmFUcmVjZSIsImxhc3RfbmFtZSI6Ik9ybG9UcmVjZSIsImVtYWlsIjoiam9uMTNAb3Jsby5jb20iLCJwYXNzd29yZF9oYXNoIjoiJDJiJDEwJE9Pb3pKelVKQmk1cmxnZ2FoOFRTSU82RGVWMWQ2UG9EdGFETTRyOVhmWWNQZ0JaVFhvVFouIiwiY3JlYXRlZF9hdCI6IjIwMjUtMDUtMTNUMDY6MzY6NTkuODAxWiIsInVwZGF0ZWRfYXQiOiIyMDI1LTA1LTEzVDA2OjM2OjU5LjgwMVoiLCJyb2xlcyI6InVzZXIiLCJpYXQiOjE3NDcxNDg4NTIsImV4cCI6MTc0Nzc1MzY1Mn0.4V6v00Zvy8BdVCoGEEzpGx2SjWbt4nHgUAi-ezhSxnI"
-  // }
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -56,7 +48,7 @@ const Index = () => {
           console.warn("No auth token found");
           return;
         }
-        setBearerToken(token)
+        setBearerToken(token);
         const response = await fetch(`http://localhost:3000/api/v1/usersverified/`, {
           method: 'GET',
           headers: { authorization: token },
@@ -225,34 +217,34 @@ const Index = () => {
   };
 
   const handleMakeAdmin = async () => {
-  try {
-    const newIsAdmin = !isAdmin;
-    const newRole = newIsAdmin ? "blogger" : "user";
+    try {
+      const newIsAdmin = !isAdmin;
+      const newRole = newIsAdmin ? "blogger" : "user";
 
-    const response = await fetch(`http://localhost:3000/api/v1/users/${currentUser.user_id}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'authorization': bearerToken
-      },
-      body: JSON.stringify({
-        roles: newRole
-      })
-    });
+      const response = await fetch(`http://localhost:3000/api/v1/users/${currentUser.user_id}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'authorization': bearerToken
+        },
+        body: JSON.stringify({
+          roles: newRole
+        })
+      });
 
-    if (response.ok) {
-      setCurrentUser(prevUser => ({
-        ...prevUser,
-        roles: newRole
-      }));
-      setIsAdmin(newIsAdmin);
-    } else {
-      console.error('Error updating user role:', response.status);
+      if (response.ok) {
+        setCurrentUser(prevUser => ({
+          ...prevUser,
+          roles: newRole
+        }));
+        setIsAdmin(newIsAdmin);
+      } else {
+        console.error('Error updating user role:', response.status);
+      }
+    } catch (error) {
+      console.error('Error updating user role:', error);
     }
-  } catch (error) {
-    console.error('Error updating user role:', error);
-  }
-};
+  };
 
   const handlePublish = async (post) => {
     const newPublishStatus = !post.is_published;
@@ -293,7 +285,6 @@ const Index = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("authtoken");
-    // setCurrentUser(null);
     navigate("/");
   };
 
@@ -303,12 +294,12 @@ const Index = () => {
         const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
           method: 'DELETE',
           headers: {
-            'authorization': localStorage.removeItem("authtoken")
+            'authorization': bearerToken
           },
         });
 
         if (response.ok) {
-          navigate("/")
+          navigate("/");
           window.location.reload();
         } else {
           console.error('Error deleting comment:', response.status);
@@ -338,7 +329,7 @@ const Index = () => {
                 <Label htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
               </div>
               <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>New Post&nbsp;</span>
+                <span>New Post </span>
                 <NotebookPen className="h-4 w-4 mr-1" />
               </a>
               <a href="/logout"
@@ -346,14 +337,14 @@ const Index = () => {
                   e.preventDefault();
                   handleLogout();
                 }} className="text-slate-300 hover:text-blue-400 flex items-center">
-                <span>Logout&nbsp;</span>
+                <span>Logout </span>
                 <LogOut className="h-4 w-4 mr-1" />
               </a>
             </>
           ) : (
             <>
               <a href="/login" className=" flex items-center">
-                <span>Login&nbsp; </span>
+                <span>Login </span>
                 <LogIn className="h-4 w-4 mr-1" />
               </a>
             </>
@@ -369,14 +360,32 @@ const Index = () => {
               <p className="font-medium">You must be logged in to view and manage blog posts</p>
             </div>
             <div className="mt-4">
-              <a href="/login" className="bg-white  text-black py-2 px-4 rounded-md transition-colors">
+              <a href="/login" className="bg-white text-black py-2 px-4 rounded-md transition-colors">
                 Log In Now
               </a>
             </div>
           </Card>
         )}
 
-        {currentUser ? (
+        {currentUser && currentUser.roles !== "blogger" && (
+          <Card className="p-6 text-center">
+            <div className="flex items-center justify-center space-x-2">
+              <Info className="h-5 w-5" />
+              <p className="font-medium">Become a blogger to edit messages and add new posts</p>
+            </div>
+            <div className="mt-4 flex items-center justify-center space-x-2">
+              <Switch
+                checked={isAdmin}
+                onCheckedChange={handleMakeAdmin}
+                id={`become-blogger-${currentUser.user_id}`}
+                className="border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
+              />
+              <Label htmlFor={`become-blogger-${currentUser.user_id}`}>Become a Blogger?</Label>
+            </div>
+          </Card>
+        )}
+
+        {currentUser && currentUser.roles === "blogger" ? (
           posts.map((post) => (
             <Card key={post.post_id} className="p-6 hover:shadow-lg transition-shadow rounded-lg">
               <div className="flex items-center space-x-2 mb-2">
@@ -510,6 +519,8 @@ const Index = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-2">
+
+
                 <Switch
                   checked={post.is_published}
                   onCheckedChange={() => handlePublish(post)}
@@ -521,9 +532,11 @@ const Index = () => {
             </Card>
           ))
         ) : (
-          <Card className="p-6 text-center text-muted-foreground">
-            <p>Blog posts will appear here after you log in</p>
-          </Card>
+          currentUser && currentUser.roles !== "blogger" ? null : (
+            <Card className="p-6 text-center text-muted-foreground">
+              <p>Blog posts will appear here after you log in</p>
+            </Card>
+          )
         )}
       </main>
 
