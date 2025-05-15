@@ -1,28 +1,14 @@
-# fly.toml app configuration file generated for user-frontend on 2025-05-15T15:07:23+03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
-
-app = 'user-frontend'
-primary_region = 'jnb'
+app = "your-app-name"
+primary_region = "iad"
 
 [build]
+  dockerfile = "Dockerfile"
+  [build.args]
+    context = "."
 
 [http_service]
   internal_port = 80
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 0
-  processes = ['app']
-  image = "node:20"
-
-[[statics]]
-guest_path = "/dist"       # Where your built files are (Vite defaults to "dist")
-url_prefix = "/"          # Handle all routes
-rewrite = "/index.html"   # Always serve index.html
-
-[[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
-  cpus = 1
