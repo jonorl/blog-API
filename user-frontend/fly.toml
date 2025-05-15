@@ -1,4 +1,4 @@
-app = "your-app-name"
+app = "user-frontend"
 primary_region = "iad"
 
 [build]
