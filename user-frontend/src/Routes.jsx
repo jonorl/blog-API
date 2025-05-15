@@ -14,11 +14,11 @@ const router = createBrowserRouter([
         element: < PostDetailPage />
     },
         {
-        path: "/signup/",
+        path: "/signup",
         element: < Signup />
     },
         {
-        path: "/login/",
+        path: "/login",
         element: < Login />
     }
 ]);
