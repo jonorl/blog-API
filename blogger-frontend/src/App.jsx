@@ -18,7 +18,6 @@ const Index = () => {
   const [editingTitlePostId, setEditingTitlePostId] = useState(null);
   const [editText, setEditText] = useState('');
   const [editTitle, setEditTitle] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const editorRef = useRef(null);
   const postTextRef = useRef({});
   const postTitleRef = useRef({});
@@ -33,6 +32,8 @@ const Index = () => {
 
   const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY
 
+  document.documentElement.classList.add('dark');
+
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -42,29 +43,6 @@ const Index = () => {
       day: 'numeric'
     });
   };
-
-  // Toggle dark mode
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
-
-  // Initialize theme based on localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-    } else if (savedTheme === 'light') {
-      setIsDarkMode(false);
-    } else {
-      // Optional: Use system preference as fallback
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(prefersDark);
-    }
-  }, []);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -252,26 +230,26 @@ const Index = () => {
   };
 
   const handleDeletePost = async (postId) => {
-        if (window.confirm('Are you sure you want to delete this post?')) {
-            try {
-                const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'authorization': bearerToken.authToken
-                    },
-                });
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/posts/${postId}`, {
+          method: 'DELETE',
+          headers: {
+            'authorization': bearerToken.authToken
+          },
+        });
 
-                if (response.ok) {
-                    navigate("/")
-                    window.location.reload();
-                } else {
-                    console.error('Error deleting comment:', response.status);
-                }
-            } catch (error) {
-                console.error('Error deleting comment:', error);
-            }
+        if (response.ok) {
+          navigate("/")
+          window.location.reload();
+        } else {
+          console.error('Error deleting comment:', response.status);
         }
-    };
+      } catch (error) {
+        console.error('Error deleting comment:', error);
+      }
+    }
+  };
 
   if (!posts) return <p>Loading...</p>;
 
@@ -380,17 +358,17 @@ const Index = () => {
                     toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
                     content_style: `
                         body {
-                          background: ${isDarkMode ? '#1f2937' : '#fff'};
-                          color: ${isDarkMode ? '#e5e7eb' : '#374151'};
+                          background: '#1f2937'};
+                          color: '#e5e7eb'};
                           font-family: Inter, sans-serif;
                           font-size: 14px;
-                          border: 1px solid ${isDarkMode ? '#4b5563' : '#e5e7eb'};
+                          border: 1px solid'#4b5563'};
                           border-radius: 4px;
                           padding: 8px;
                         }
                       `,
-                    skin: isDarkMode ? 'oxide-dark' : 'oxide',
-                    content_css: isDarkMode ? 'dark' : 'default',
+                    skin: 'oxide-dark',
+                    content_css: 'dark',
                   }}
                 />
                 <div className="flex justify-end space-x-2 mt-2">
@@ -429,6 +407,11 @@ const Index = () => {
               </div>
             )}
             <Separator className="my-4" />
+            <div className="pt-4">
+              <div className="flex items-center text-slate-400">
+                <span>{post.commentsCount || 0} Comments</span>
+              </div>
+            </div>
             <div className="flex items-center space-x-4">
               <div>
                 <p className="font-medium">{post.authorFirstName} {post.authorLastName}</p>

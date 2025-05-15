@@ -3,7 +3,7 @@ import App from "./App";
 import PostDetailPage from "./PostDetailPage";
 import New from "./New";
 // import Signup from "./Signup"
-// import Login from "./Login"
+import Login from "./Login.jsx"
 
 const router = createBrowserRouter([
     {
@@ -21,11 +21,11 @@ const router = createBrowserRouter([
 /*         {
         path: "/signup/",
         element: < Signup />
-    },
+    },*/
         {
         path: "/login/",
         element: < Login />
-    } */
+    } 
 ]);
 
 export default router;

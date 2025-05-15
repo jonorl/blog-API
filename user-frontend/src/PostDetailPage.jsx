@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import sanitizeHtml from 'sanitize-html';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 // shadcn/ui components
@@ -316,7 +317,7 @@ const PostDetailPage = () => {
                 </>
               )}
 
-              <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <a href="http://127.0.0.1:5174/" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
               </a>
@@ -350,10 +351,8 @@ const PostDetailPage = () => {
             </CardHeader>
             <CardContent className="pt-6">
 
-              <div className="prose prose-invert max-w-none">
-                <p className="text-slate-300 leading-relaxed text-lg">
-                  {post.post_text}
-                </p>
+              <div className="prose prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.post_text) }}>
               </div>
             </CardContent>
           </Card>
