@@ -39,6 +39,7 @@ This project is part of [The Odin Project's Node.js curriculum](https://www.theo
 
 ## 📁 Project Structure
 
+```
 blog-API/
 │
 ├── backend/              # Express backend with Prisma + PostgreSQL
@@ -54,6 +55,7 @@ blog-API/
 ├── frontend-user/        # React + Tailwind + Shadcn/UI Public-facing blog frontend
 │
 └── README.md             # Project overview
+```
 
 ## 🧪 Example API Endpoints
 
@@ -115,7 +117,7 @@ Server runs at: `http://localhost:3000`
 * Validate inputs and handle errors gracefully
 * Implement user authentication and session management
 * Support role-based authorization (admin/user)
-* Prepare and deploy full-stack apps (Netlify + Koyeb)
+* Prepare and deploy full-stack apps ([Netlify](https://www.netlify.com/) + [Koyeb](https://www.koyeb.com/))
 
 🚀 Deployment
 
@@ -125,7 +127,7 @@ Server runs at: `http://localhost:3000`
 ## 👨‍💻 Author
 
 **Jonathan Orlowski**
-[GitHub](https://github.com/jonorl)
-[LinkedIn](https://www.linkedin.com/in/jonathan-orlowski-58910b21/)
+*[GitHub](https://github.com/jonorl)
+*[LinkedIn](https://www.linkedin.com/in/jonathan-orlowski-58910b21/)
 
 > 📚 This project is part of [The Odin Project](https://www.theodinproject.com/), a free and open-source curriculum for aspiring full-stack web developers.
