@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 const Index = () => {
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [postsLoading, setPostsLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -28,12 +30,13 @@ const Index = () => {
         setCurrentUser(userData.user);
       } catch (error) {
         console.error("Error fetching current user:", error);
+      } finally {
+        setUserLoading(false);
       }
     };
 
     fetchCurrentUser();
   }, []);
-
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -68,6 +71,8 @@ const Index = () => {
         }
       } catch (error) {
         console.error('Error fetching post:', error);
+      } finally {
+        setPostsLoading(false);
       }
     };
     fetchPosts();
@@ -78,8 +83,20 @@ const Index = () => {
   const handleLogout = () => {
     localStorage.removeItem("authtoken");
     setCurrentUser(null);
-    navigate("/"); 
+    navigate("/");
   };
+
+  const Spinner = () => (
+    <div className="flex justify-center items-center py-12">
+      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+
+  const InlineSpinner = () => (
+    <div className="flex items-center justify-center">
+      <div className="h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
@@ -90,11 +107,16 @@ const Index = () => {
             <div className="flex items-center">
               <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <BookOpen className="h-6 w-6 text-blue-400" />
-                <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
+                <span className="ml-2 text-xl font-bold text-white hidden md:inline">
+                  Blog API Project
+                </span>
               </a>
+
             </div>
-            <nav className="hidden md:flex space-x-8">
-              {currentUser ? (
+            <nav className="flex flex-wrap items-center gap-x-2 text-xs sm:text-sm md:text-base">
+              {userLoading ? (
+                <InlineSpinner />
+              ) : currentUser ? (
                 <>
                   <span>Hello {currentUser.first_name}&nbsp; </span>
 
@@ -125,6 +147,7 @@ const Index = () => {
                 <Rss className="h-4 w-4 mr-1" />
               </a>
             </nav>
+
           </div>
 
         </div>
@@ -134,37 +157,43 @@ const Index = () => {
       <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex flex-col">
           <h1 className="text-3xl font-bold text-white text-center mb-8">All Posts</h1>
-          <div className="space-y-6">
-            {posts.filter((post) => post.is_published === true).map((post) => (
-              <Card
-                key={post.post_id}
-                className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg hover:shadow-xl transition-shadow"
-              >
-                <CardHeader className="pb-0">
-                  <CardTitle className="text-2xl font-semibold text-white">
-                    <a
-                      href={`/posts/${post.post_id}`}
-                      className="hover:text-blue-400 transition-colors"
-                    >
-                      {post.title}
-                    </a>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="flex items-center text-slate-400">
-                    <span>Author: {post.authorFirstName} {post.authorLastName}</span>
-                  </div>
-                </CardContent>
-                <CardContent className="pt-4">
-                  <div className="flex items-center text-slate-400">
-                    <span>{post.commentsCount || 0} Comments</span>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+
+          {postsLoading ? (
+            <Spinner />
+          ) : (
+            <div className="space-y-6">
+              {posts.filter((post) => post.is_published === true).map((post) => (
+                <Card
+                  key={post.post_id}
+                  className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg hover:shadow-xl transition-shadow"
+                >
+                  <CardHeader className="pb-0">
+                    <CardTitle className="text-2xl font-semibold text-white">
+                      <a
+                        href={`/posts/${post.post_id}`}
+                        className="hover:text-blue-400 transition-colors"
+                      >
+                        {post.title}
+                      </a>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center text-slate-400">
+                      <span>Author: {post.authorFirstName} {post.authorLastName}</span>
+                    </div>
+                  </CardContent>
+                  <CardContent className="pt-4">
+                    <div className="flex items-center text-slate-400">
+                      <span>{post.commentsCount || 0} Comments</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
         </div>
       </main>
+
 
       {/* Footer */}
       <footer className="bg-slate-800 shadow-inner mt-auto">
