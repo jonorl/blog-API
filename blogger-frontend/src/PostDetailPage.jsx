@@ -1,32 +1,57 @@
+// React import
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription
-} from "@/components/ui/card";
+
+// ShadCN/UI components
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import {
-    ArrowLeft,
-    Calendar,
-    Trash2,
-    Pencil,
-    LogIn,
-    LogOut,
-    NotebookPen,
-    Info,
-} from "lucide-react";
+
+// Lucide React and tinymce React icons
+import { ArrowLeft, Calendar, Trash2, Pencil, LogIn, LogOut, NotebookPen, Info } from "lucide-react";
 import { Editor } from '@tinymce/tinymce-react';
+
+// Library to sanitize "dangerouslySetInnerHTML"
 import sanitizeHtml from 'sanitize-html';
 
+//Helper function to format time
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-UK', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+};
+
+// .env references
+const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
+const host = import.meta.env.VITE_HOST;
+
+// Loading spinners
+
+const Spinner = () => (
+    <div className="flex justify-center items-center py-12">
+        <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+);
+
+const InlineSpinner = () => (
+    <div className="flex items-center justify-center">
+        <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+);
+
 const PostDetailPage = () => {
+
+    // Params
     const { id } = useParams();
+
+    // Hooks
     const [post, setPost] = useState(null);
     const [comments, setComments] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,34 +63,18 @@ const PostDetailPage = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [bearerToken, setBearerToken] = useState('');
-    const editorRef = useRef(null);
-    const postTextRef = useRef({});
     const [textareaHeight, setTextareaHeight] = useState('auto');
     const [editingPostId, setEditingPostId] = useState(null);
     const [postsLoading, setPostsLoading] = useState(true);
     const [userLoading, setUserLoading] = useState(true);
+    const editorRef = useRef(null);
+    const postTextRef = useRef({});
 
-    const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
-
+    // Toggle dark mode
     document.documentElement.classList.add('dark');
 
-    const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        return date.toLocaleDateString('en-UK', {
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-        });
-    };
-
+    // to redirect
     const navigate = useNavigate();
-
-    const handleLogout = () => {
-        localStorage.removeItem("authtoken");
-        setCurrentUser(null);
-        navigate("/");
-    };
 
     // Fetch current user
     useEffect(() => {
@@ -77,7 +86,7 @@ const PostDetailPage = () => {
                     return;
                 }
                 setBearerToken(token);
-                const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersverified/`, {
+                const response = await fetch(`${host}api/v1/usersverified/`, {
                     method: 'GET',
                     headers: { authorization: token },
                 });
@@ -104,8 +113,8 @@ const PostDetailPage = () => {
         const fetchPostAndUsers = async () => {
             try {
                 const headers = { Authorization: bearerToken };
-                const postResponse = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}`, { headers });
-                const commentsResponse = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}/comments`, { headers });
+                const postResponse = await fetch(`${host}api/v1/posts/${id}`, { headers });
+                const commentsResponse = await fetch(`${host}api/v1/posts/${id}/comments`, { headers });
 
                 if (!postResponse.ok || !commentsResponse.ok) {
                     throw new Error('Failed to fetch post or comments');
@@ -123,7 +132,7 @@ const PostDetailPage = () => {
                 ].filter((id, index, self) => id && self.indexOf(id) === index);
 
                 const userPromises = userIds.map((id) =>
-                    fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${id}`, { headers }).then((res) => {
+                    fetch(`${host}api/v1/users/${id}`, { headers }).then((res) => {
                         if (!res.ok) {
                             console.warn(`Failed to fetch user ${id}: ${res.status}`);
                             return { user: { user_id: id, first_name: null } };
@@ -167,13 +176,18 @@ const PostDetailPage = () => {
         if (bearerToken) fetchPostAndUsers();
     }, [id, bearerToken]);
 
-    // Handle make admin
+    const handleLogout = () => {
+        localStorage.removeItem("authtoken");
+        setCurrentUser(null);
+        navigate("/");
+    };
+
     const handleMakeAdmin = async () => {
         try {
             const newIsAdmin = !isAdmin;
             const newRole = newIsAdmin ? "blogger" : "user";
 
-            const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${currentUser.user_id}/`, {
+            const response = await fetch(`${host}api/v1/users/${currentUser.user_id}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -198,18 +212,16 @@ const PostDetailPage = () => {
         }
     };
 
-    // Handle title edit
     const handleEditTitle = () => {
         setEditingTitle(true);
         setEditTitleText(post.title);
     };
 
-    // Handle save title
     const handleSaveTitle = async () => {
         if (editTitleText.trim() === '') return;
         setIsSubmitting(true);
         try {
-            const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${post.post_id}`, {
+            const response = await fetch(`${host}api/v1/posts/${post.post_id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -238,7 +250,6 @@ const PostDetailPage = () => {
         }
     };
 
-    // Handle cancel title edit
     const handleCancelTitleEdit = () => {
         setEditingTitle(false);
         setEditTitleText('');
@@ -265,7 +276,7 @@ const PostDetailPage = () => {
         if (content.trim() === '') return;
         setIsSubmitting(true);
         try {
-            const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${postId}`, {
+            const response = await fetch(`${host}api/v1/posts/${postId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -299,7 +310,7 @@ const PostDetailPage = () => {
         if (editText.trim() === '') return;
         setIsSubmitting(true);
         try {
-            const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/comments/${commentId}`, {
+            const response = await fetch(`${host}api/v1/comments/${commentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -342,7 +353,7 @@ const PostDetailPage = () => {
     const handleDeletePost = async (postId) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
-                const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${postId}`, {
+                const response = await fetch(`${host}api/v1/posts/${postId}`, {
                     method: 'DELETE',
                     headers: {
                         'authorization': bearerToken
@@ -363,7 +374,7 @@ const PostDetailPage = () => {
     const handleDelete = async (commentId) => {
         if (window.confirm('Are you sure you want to delete this comment?')) {
             try {
-                const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/comments/${commentId}`, {
+                const response = await fetch(`${host}api/v1/comments/${commentId}`, {
                     method: 'DELETE',
                     headers: {
                         'authorization': bearerToken
@@ -383,18 +394,6 @@ const PostDetailPage = () => {
         }
     };
 
-    const Spinner = () => (
-        <div className="flex justify-center items-center py-12">
-            <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
-    const InlineSpinner = () => (
-        <div className="flex items-center justify-center">
-            <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
     return (
         <div className="min-h-screen bg-background text-foreground">
             <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
@@ -406,7 +405,7 @@ const PostDetailPage = () => {
                         <InlineSpinner />
                     ) : currentUser ? (
                         <>
-                            <div className="flex items-center">
+                            <div className="flex items-center sm:space-x-2">
                                 <Label className={"text-center text-sm sm:text-base "} htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
                                 <Switch
                                     checked={isAdmin}

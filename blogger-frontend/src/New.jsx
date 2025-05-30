@@ -1,41 +1,54 @@
+// React import
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-// shadcn/ui components
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-    CardDescription,
-    CardFooter,
-} from "@/components/ui/card";
+
+// ShadCN/UI components
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import {
-    NotebookPen,
-    LogOut,
-    ArrowLeft,
-    Save,
-    Info,
-} from "lucide-react";
 import { Editor } from '@tinymce/tinymce-react';
 
+// Lucide React icons
+import { NotebookPen, LogOut, ArrowLeft, Save, Info } from "lucide-react";
+
+// .env references
+const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
+const host = import.meta.env.VITE_HOST;
+
+// Loading spinners
+
+const Spinner = () => (
+    <div className="flex justify-center items-center py-12">
+        <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+);
+
+const InlineSpinner = () => (
+    <div className="flex items-center justify-center">
+        <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+);
+
 const NewPostPage = () => {
-    const navigate = useNavigate();
+
+    // Hooks
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isPublished, setIsPublished] = useState(true);
-    const [isDarkMode, setIsDarkMode] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [bearerToken, setBearerToken] = useState('');
     const [userLoading, setUserLoading] = useState(true);
     const editorRef = useRef(null);
 
-    const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
+    // Toggle dark mode
+    document.documentElement.classList.add('dark');
+
+    // to redirect
+    const navigate = useNavigate();
 
     // Fetch current user
     useEffect(() => {
@@ -47,7 +60,7 @@ const NewPostPage = () => {
                     return;
                 }
                 setBearerToken(token);
-                const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersverified/`, {
+                const response = await fetch(`${host}api/v1/usersverified/`, {
                     method: 'GET',
                     headers: { authorization: token },
                 });
@@ -67,34 +80,12 @@ const NewPostPage = () => {
         fetchCurrentUser();
     }, []);
 
-    // Handle dark mode toggle
-    useEffect(() => {
-        if (isDarkMode) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    }, [isDarkMode]);
-
-    // Initialize theme
-    useEffect(() => {
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            setIsDarkMode(true);
-        } else if (savedTheme === 'light') {
-            setIsDarkMode(false);
-        } else {
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            setIsDarkMode(prefersDark);
-        }
-    }, []);
-
     const handleMakeAdmin = async () => {
         try {
             const newIsAdmin = !isAdmin;
             const newRole = newIsAdmin ? "blogger" : "user";
 
-            const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${currentUser.user_id}/`, {
+            const response = await fetch(`${host}api/v1/users/${currentUser.user_id}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -135,7 +126,7 @@ const NewPostPage = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch('https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts', {
+            const response = await fetch('${host}api/v1/posts', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -163,18 +154,6 @@ const NewPostPage = () => {
         }
     };
 
-    const Spinner = () => (
-        <div className="flex justify-center items-center py-12">
-            <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
-    const InlineSpinner = () => (
-        <div className="flex items-center justify-center">
-            <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
-        </div>
-    );
-
     return (
         <div className="min-h-screen bg-background text-foreground">
             <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
@@ -185,7 +164,7 @@ const NewPostPage = () => {
                         <InlineSpinner />
                     ) : currentUser && (
                         <>
-                            <div className="flex items-center">
+                            <div className="flex items-center sm:space-x-2">
                                 <Label className={"text-center text-sm sm:text-base "} htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
                                 <Switch
                                     checked={isAdmin}
@@ -285,18 +264,18 @@ const NewPostPage = () => {
                                                 'alignright alignjustify | bullist numlist outdent indent | ' +
                                                 'removeformat | help',
                                             content_style: `
-                                                body {
-                                                background: ${isDarkMode ? '#1f2937' : '#fff'};
-                                                color: ${isDarkMode ? '#e5e7eb' : '#374151'};
-                                                font-family: Inter, sans-serif;
-                                                font-size: 14px;
-                                                border: 1px solid ${isDarkMode ? '#4b5563' : '#e5e7eb'};
-                                                border-radius: 4px;
-                                                padding: 8px;
-                                                }
+                        body {
+                          background: '#1f2937'};
+                          color: '#e5e7eb'};
+                          font-family: Inter, sans-serif;
+                          font-size: 14px;
+                          border: 1px solid'#4b5563'};
+                          border-radius: 4px;
+                          padding: 8px;
+                        }
                                             `,
-                                            skin: isDarkMode ? 'oxide-dark' : 'oxide',
-                                            content_css: isDarkMode ? 'dark' : 'default',
+                                            skin: 'oxide-dark',
+                                            content_css: 'dark',
                                         }}
                                     />
                                 </div>

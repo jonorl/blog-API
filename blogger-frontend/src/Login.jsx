@@ -1,44 +1,32 @@
-import React, { useState, useEffect } from 'react';
+// React import
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+// ShadCN/UI components
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+
+// Lucide React icons
 import { LogIn } from "lucide-react";
 
+// .env references
+const usersHost = import.meta.env.VITE_USERS_HOST;
+
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
+  
+  // Hooks
+  const [formData, setFormData] = useState({email: '', password: '',});
   const [errors, setErrors] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  // Toggle dark mode
+  document.documentElement.classList.add('dark');
+  
+  // to redirect
   const navigate = useNavigate();
-
-  // Initialize theme based on localStorage or system preference
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-      setIsDarkMode(true);
-    } else if (savedTheme === 'light') {
-      setIsDarkMode(false);
-    } else {
-      // Use system preference as fallback
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(prefersDark);
-    }
-  }, []);
-
-  // Apply dark mode
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -173,7 +161,7 @@ const Login = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <a href="http://127.0.0.1:5173/signup" className="text-primary hover:underline">
+            <a href={`${usersHost}signup`} className="text-primary hover:underline">
               Register here
             </a>
           </p>
