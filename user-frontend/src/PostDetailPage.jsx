@@ -1,30 +1,54 @@
+// React import
 import React, { useEffect, useState } from 'react';
-import sanitizeHtml from 'sanitize-html';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-// shadcn/ui components
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription
-} from "@/components/ui/card";
+
+// ShadCN/UI components
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  BookOpen,
-  Calendar,
-  Trash2,
-  Pencil,
-  LogIn,
-  LogOut,
-  Rss,
-  UserRoundPlus,
-} from "lucide-react";
+
+// Lucide React icons
+import { BookOpen, Calendar, Trash2, Pencil, LogIn, LogOut, Rss, UserRoundPlus, } from "lucide-react";
+
+// Library to sanitize "dangerouslySetInnerHTML"
+import sanitizeHtml from 'sanitize-html';
+
+//Helper function to format time
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-UK', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric'
+  });
+};
+
+// .env references
+const host = import.meta.env.VITE_HOST;
+const bloggersHost = import.meta.env.VITE_BLOGGERS_HOST
+
+// Loading spinners
+
+const Spinner = () => (
+  <div className="flex justify-center items-center py-12">
+    <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
+
+const InlineSpinner = () => (
+  <div className="flex items-center justify-center">
+    <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
 
 const PostDetailPage = () => {
+
+  // Params
   const { id } = useParams();
+
+  // Hooks
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
@@ -36,24 +60,10 @@ const PostDetailPage = () => {
   const [userLoading, setUserLoading] = useState(true);
   const [postsLoading, setPostsLoading] = useState(true);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-UK', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
+  // to redirect
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("authtoken");
-    setCurrentUser(null);
-    navigate("/");
-  }
-
+  // Fetch user
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -63,7 +73,7 @@ const PostDetailPage = () => {
           return;
         }
 
-        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersVerified/`, {
+        const response = await fetch(`${host}api/v1/usersVerified/`, {
           headers: { Authorization: token },
         });
 
@@ -83,15 +93,14 @@ const PostDetailPage = () => {
     fetchCurrentUser();
   }, []);
 
+  // Fetch posts, users and comments
   useEffect(() => {
-
     const fetchPostAndUsers = async () => {
       try {
-        // Fetch post and comments
-        const postResponse = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}`, {
+        const postResponse = await fetch(`${host}api/v1/posts/${id}`, {
           headers: { Authorization: localStorage.getItem("authtoken") },
         });
-        const commentsResponse = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}/comments`, {
+        const commentsResponse = await fetch(`${host}api/v1/posts/${id}/comments`, {
           headers: { Authorization: localStorage.getItem("authtoken") },
         });
 
@@ -113,7 +122,7 @@ const PostDetailPage = () => {
 
         // Fetch user data with auth token
         const userPromises = userIds.map((id) =>
-          fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${id}`, {
+          fetch(`${host}api/v1/users/${id}`, {
             headers: { Authorization: localStorage.getItem("authtoken") },
           }).then((res) => {
             if (!res.ok) {
@@ -171,6 +180,12 @@ const PostDetailPage = () => {
     fetchPostAndUsers();
   }, [id]);
 
+  const handleLogout = () => {
+    localStorage.removeItem("authtoken");
+    setCurrentUser(null);
+    navigate("/");
+  }
+
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
     if (newComment.trim() === '') return;
@@ -178,7 +193,7 @@ const PostDetailPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${id}/comments`, {
+      const response = await fetch(`${host}api/v1/posts/${id}/comments`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -221,7 +236,7 @@ const PostDetailPage = () => {
     if (editText.trim() === '') return;
     setIsSubmitting(true);
     try {
-      const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/comments/${commentId}`, {
+      const response = await fetch(`${host}api/v1/comments/${commentId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -261,7 +276,7 @@ const PostDetailPage = () => {
   const handleDelete = async (commentId) => {
     if (window.confirm('Are you sure you want to delete this comment?')) {
       try {
-        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/comments/${commentId}`, {
+        const response = await fetch(`${host}api/v1/comments/${commentId}`, {
           method: 'DELETE',
           headers: {
             'authorization': localStorage.getItem("authtoken")
@@ -280,18 +295,6 @@ const PostDetailPage = () => {
       }
     }
   };
-
-  const Spinner = () => (
-    <div className="flex justify-center items-center py-12">
-      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
-
-  const InlineSpinner = () => (
-    <div className="flex items-center justify-center">
-      <div className="h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
@@ -335,7 +338,7 @@ const PostDetailPage = () => {
                 </>
               )}
 
-              <a href="https://bloggers-frontend.netlify.app/" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <a href={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
               </a>

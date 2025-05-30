@@ -1,14 +1,42 @@
+// React import
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { BookOpen, LogIn, LogOut, Rss, UserRoundPlus } from 'lucide-react';
+
+// ShadCN/UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
+// Lucide React icons
+import { BookOpen, LogIn, LogOut, Rss, UserRoundPlus } from 'lucide-react';
+
+// .env references
+const host = import.meta.env.VITE_HOST;
+const bloggersHost = import.meta.env.VITE_BLOGGERS_HOST
+
+// Loading spinners
+const Spinner = () => (
+  <div className="flex justify-center items-center py-12">
+    <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
+
+const InlineSpinner = () => (
+  <div className="flex items-center justify-center">
+    <div className="h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+  </div>
+);
+
 const Index = () => {
+
+  // Hooks 
   const [posts, setPosts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [postsLoading, setPostsLoading] = useState(true);
   const [userLoading, setUserLoading] = useState(true);
 
+  // to redirect
+  const navigate = useNavigate();
+
+  // Fetch user
   useEffect(() => {
     const fetchCurrentUser = async () => {
       try {
@@ -18,7 +46,7 @@ const Index = () => {
           return;
         }
 
-        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/usersverified/`, {
+        const response = await fetch(`${host}api/v1/usersverified/`, {
           headers: { Authorization: token },
         });
 
@@ -38,10 +66,11 @@ const Index = () => {
     fetchCurrentUser();
   }, []);
 
+  // Fetch posts
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts`);
+        const response = await fetch(`${host}api/v1/posts`);
 
         if (response.ok) {
           const data = await response.json();
@@ -50,10 +79,10 @@ const Index = () => {
           const postsWithDetails = await Promise.all(
             initialPosts.map(async (post) => {
               const commentsResponse = await fetch(
-                `https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/posts/${post.post_id}/comments`
+                `${host}api/v1/posts/${post.post_id}/comments`
               );
               const userResponse = await fetch(
-                `https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/${post.author_id}`
+                `${host}api/v1/users/${post.author_id}`
               );
               const commentsData = await commentsResponse.json();
               const userData = await userResponse.json();
@@ -78,25 +107,11 @@ const Index = () => {
     fetchPosts();
   }, []);
 
-  const navigate = useNavigate();
-
   const handleLogout = () => {
     localStorage.removeItem("authtoken");
     setCurrentUser(null);
     navigate("/");
   };
-
-  const Spinner = () => (
-    <div className="flex justify-center items-center py-12">
-      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
-
-  const InlineSpinner = () => (
-    <div className="flex items-center justify-center">
-      <div className="h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-    </div>
-  );
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
@@ -142,7 +157,7 @@ const Index = () => {
                 </>
               )}
 
-              <a href="https://bloggers-frontend.netlify.app/" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <a href={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
               </a>

@@ -1,21 +1,55 @@
+// React import
 import React, { useState, useEffect } from 'react';
-import { BookOpen, Rss, LogIn, LogOut, UserRoundPlus } from 'lucide-react';
+
+// ShadCN/UI components
+
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 
+// Lucide React icons
+import { BookOpen, Rss, LogIn, LogOut, UserRoundPlus } from 'lucide-react';
+
+// .env references
+const host = import.meta.env.VITE_HOST;
+const bloggersHost = import.meta.env.VITE_BLOGGERS_HOST
+
 const SignUp = () => {
-    const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        password: '',
-        passwordConfirmation: '',
-    });
+
+    // Hooks
+    const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', passwordConfirmation: '' });
     const [errors, setErrors] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
+
+    // Fetch users
+    useEffect(() => {
+        const fetchCurrentUser = async () => {
+            try {
+                const token = localStorage.getItem("authtoken");
+                if (!token) {
+                    console.warn("No auth token found");
+                    return;
+                }
+
+                const response = await fetch(`${host}api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
+                    headers: { Authorization: token },
+                });
+
+                if (!response.ok) {
+                    throw new Error("Failed to fetch current user");
+                }
+
+                const userData = await response.json();
+                setCurrentUser(userData.user);
+            } catch (error) {
+                console.error("Error fetching current user:", error);
+            }
+        };
+
+        fetchCurrentUser();
+    }, []);
 
 
     const handleInputChange = (e) => {
@@ -47,7 +81,7 @@ const SignUp = () => {
 
         try {
             // Simulate API call to /sign-up
-            const response = await fetch('https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users', {
+            const response = await fetch(`${host}api/v1/users`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(formData),
@@ -79,35 +113,6 @@ const SignUp = () => {
             setIsSubmitting(false);
         }
     };
-
-    useEffect(() => {
-        const fetchCurrentUser = async () => {
-            try {
-                const token = localStorage.getItem("authtoken");
-                if (!token) {
-                    console.warn("No auth token found");
-                    return;
-                }
-
-                const response = await fetch(`https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/verified/${localStorage.getItem("authtoken")}`, {
-                    headers: { Authorization: token },
-                });
-
-                if (!response.ok) {
-                    throw new Error("Failed to fetch current user");
-                }
-
-                const userData = await response.json();
-                setCurrentUser(userData.user);
-            } catch (error) {
-                console.error("Error fetching current user:", error);
-            }
-        };
-
-        fetchCurrentUser();
-    }, []);
-
-
 
     return (
         <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
@@ -144,7 +149,7 @@ const SignUp = () => {
                                 </>
                             )}
 
-                            <a href="https://bloggers-frontend.netlify.app/" className="text-slate-300 hover:text-blue-400 flex items-center">
+                            <a href={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <span>Blogger CMS access&nbsp;</span>
                                 <Rss className="h-4 w-4 mr-1" />
                             </a>
