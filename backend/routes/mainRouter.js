@@ -1,11 +1,20 @@
+// Express set-up
 const { Router } = require('express');
 const mainRouter = Router();
-const mainController = require('../controllers/mainController');
+
+// Import database queries
 const db = require('../db/queries');
+
+// Import Controllers/Middleware
+const mainController = require('../controllers/mainController');
 const { validateUser } = require('../controllers/formValidation');
 const { validateEmail } = require('../controllers/emailDuplicateValidation');
 const { validationResult } = require('express-validator');
+
+// Import other helper libs
 const bcrypt = require('bcryptjs');
+
+//GET ROUTES
 
 // Get all users
 mainRouter.get('/api/v1/users', async (req, res) => {
@@ -28,6 +37,32 @@ mainRouter.get(
     res.json({ message: 'User details: ', user });
   }
 );
+
+// Get all posts
+mainRouter.get('/api/v1/posts', async (req, res) => {
+  const getPosts = await db.getAllPosts();
+  res.json({ message: 'List of all posts: ', getPosts });
+});
+
+// Get all posts by ID
+mainRouter.get('/api/v1/posts/:id', async (req, res) => {
+  const post = await db.readPost(req.params.id);
+  res.json({ message: 'Post details: ', post });
+});
+
+// Get comments for a post
+mainRouter.get('/api/v1/posts/:postId/comments', async (req, res) => {
+  const showPostComments = await db.showPostComments(req.params.postId);
+  res.json({ message: 'Showing all comments for post', showPostComments });
+});
+
+// Get a specific comment
+mainRouter.get('/api/v1/comments/:id', async (req, res) => {
+  const showSpecificComment = await db.showSpecificComment(req.params.id);
+  res.json({ message: 'Showing specific comment: ', showSpecificComment });
+});
+
+// POST ROUTES
 
 // Create new user
 mainRouter.post(
@@ -118,46 +153,6 @@ mainRouter.post(
   }
 );
 
-// Update a user
-mainRouter.put(
-  '/api/v1/users/:id',
-  mainController.verifyToken,
-  async (req, res) => {
-    const editUser = await db.updateUser(
-      req.params.id,
-      req.body.firstname,
-      req.body.lastname,
-      req.body.email,
-      req.body.roles
-    );
-    res.json({ message: 'User updated successfully!', editUser });
-  }
-);
-
-// Delete a user
-mainRouter.delete(
-  '/api/v1/users/:id',
-  mainController.verifyToken,
-  async (req, res) => {
-    const deleteUser = await db.deleteUser(req.params.id);
-    res.json({ message: 'User deleted successfully', deleteUser });
-  }
-);
-
-// Posts Routes
-
-// Get all posts
-mainRouter.get('/api/v1/posts', async (req, res) => {
-  const getPosts = await db.getAllPosts();
-  res.json({ message: 'List of all posts: ', getPosts });
-});
-
-// Get all posts by ID
-mainRouter.get('/api/v1/posts/:id', async (req, res) => {
-  const post = await db.readPost(req.params.id);
-  res.json({ message: 'Post details: ', post });
-});
-
 // Create new post
 mainRouter.post(
   '/api/v1/posts',
@@ -171,6 +166,38 @@ mainRouter.post(
       true
     );
     res.json({ message: 'Blog posting successful', newPost });
+  }
+);
+
+// Add a comment to a post
+mainRouter.post(
+  '/api/v1/posts/:postId/comments',
+  mainController.verifyToken,
+  async (req, res) => {
+    const createComment = await db.createComment(
+      req.user.user_id,
+      req.body.text,
+      req.params.postId
+    );
+    res.json({ message: 'comment added successfully!', createComment });
+  }
+);
+
+// PUT ROUTES
+
+// Update a user
+mainRouter.put(
+  '/api/v1/users/:id',
+  mainController.verifyToken,
+  async (req, res) => {
+    const editUser = await db.updateUser(
+      req.params.id,
+      req.body.firstname,
+      req.body.lastname,
+      req.body.email,
+      req.body.roles
+    );
+    res.json({ message: 'User updated successfully!', editUser });
   }
 );
 
@@ -193,44 +220,6 @@ mainRouter.put(
   }
 );
 
-// Delete post
-mainRouter.delete(
-  '/api/v1/posts/:id',
-  mainController.verifyToken,
-  async (req, res) => {
-    const deletePost = await db.deletePost(req.params.id);
-    res.json({ message: 'Post deleted successfuly', deletePost });
-  }
-);
-
-// Comments route
-
-// Get comments for a post
-mainRouter.get('/api/v1/posts/:postId/comments', async (req, res) => {
-  const showPostComments = await db.showPostComments(req.params.postId);
-  res.json({ message: 'Showing all comments for post', showPostComments });
-});
-
-// Get a specific comment
-mainRouter.get('/api/v1/comments/:id', async (req, res) => {
-  const showSpecificComment = await db.showSpecificComment(req.params.id);
-  res.json({ message: 'Showing specific comment: ', showSpecificComment });
-});
-
-// Add a comment to a post
-mainRouter.post(
-  '/api/v1/posts/:postId/comments',
-  mainController.verifyToken,
-  async (req, res) => {
-    const createComment = await db.createComment(
-      req.user.user_id,
-      req.body.text,
-      req.params.postId
-    );
-    res.json({ message: 'comment added successfully!', createComment });
-  }
-);
-
 // Update a comment
 mainRouter.put(
   '/api/v1/comments/:id',
@@ -238,6 +227,28 @@ mainRouter.put(
   async (req, res) => {
     const updateComment = await db.updateComment(req.params.id, req.body.text);
     res.json({ message: 'Comment updated', updateComment });
+  }
+);
+
+// DELETE ROUTES
+
+// Delete a user
+mainRouter.delete(
+  '/api/v1/users/:id',
+  mainController.verifyToken,
+  async (req, res) => {
+    const deleteUser = await db.deleteUser(req.params.id);
+    res.json({ message: 'User deleted successfully', deleteUser });
+  }
+);
+
+// Delete post
+mainRouter.delete(
+  '/api/v1/posts/:id',
+  mainController.verifyToken,
+  async (req, res) => {
+    const deletePost = await db.deletePost(req.params.id);
+    res.json({ message: 'Post deleted successfuly', deletePost });
   }
 );
 

@@ -1,7 +1,7 @@
+// Email validation when creating a new user
+
 const { body } = require("express-validator");
 const db = require("../db/queries");
-
-// Email validation when creating a new user
 
 const validateEmail = [
   body("email")
