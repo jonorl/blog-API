@@ -33,6 +33,8 @@ const PostDetailPage = () => {
   const [editText, setEditText] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -73,6 +75,8 @@ const PostDetailPage = () => {
         setCurrentUser(userData.user);
       } catch (error) {
         console.error("Error fetching current user:", error);
+      } finally {
+        setUserLoading(false);
       }
     };
 
@@ -159,6 +163,8 @@ const PostDetailPage = () => {
         console.log('Updated comments:', updatedComments);
       } catch (error) {
         console.error('Error fetching data:', error);
+      } finally {
+        setPostsLoading(false);
       }
     };
 
@@ -275,7 +281,17 @@ const PostDetailPage = () => {
     }
   };
 
-  if (!post) return <p>Loading...</p>;
+  const Spinner = () => (
+    <div className="flex justify-center items-center py-12">
+      <div className="h-10 w-10 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+
+  const InlineSpinner = () => (
+    <div className="flex items-center justify-center">
+      <div className="h-4 w-4 border-2 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-900 text-slate-200">
@@ -287,11 +303,13 @@ const PostDetailPage = () => {
 
               <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <BookOpen className="h-6 w-6 text-blue-400" />
-                <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
+                <span className="ml-2 text-xl font-bold text-white hidden md:inline">Blog API Project</span>
               </a>
             </div>
-            <nav className="hidden md:flex space-x-8">
-              {currentUser ? (
+            <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
+              {userLoading ? (
+                <InlineSpinner />
+              ) : currentUser ? (
                 <>
                   <span>Hello {currentUser.first_name}&nbsp; </span>
 
@@ -333,114 +351,118 @@ const PostDetailPage = () => {
       {/* Main Content */}
       <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex flex-col ">
-          {/* Blog Post */}
-          <Card className="mb-8 w-full bg-slate-800 border-slate-700 text-slate-200 shadow-lg">
-            <CardHeader className="pb-0">
-              <CardTitle className="text-3xl font-bold text-white text-center">
-                {post.title}
-              </CardTitle>
-              <CardDescription className="text-slate-400 flex items-center justify-center gap-4 mt-2 flex-wrap">
-                <div className="flex items-center">
-                  <span>{post.authorFirstName + " " + post.authorLastName} </span>
-                </div>
-                <div className="flex items-center">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  <span>{formatDate(post.message_created_at)}</span>
-                </div>
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-6">
-
-              <div className="prose prose-invert max-w-none"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.post_text) }}>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Comments Section */}
-          <div className="mb-8 w-full ">
-            <h2 className="text-2xl font-bold mb-6 text-white text-center">Comments ({comments.length})</h2> {/* Increased mb-4 to mb-6 */}
-            <div className="space-y-6 mb-8"> 
-              {comments.map((comment) => (
-                <Card key={comment.comment_id} className="bg-slate-800 border-slate-700 text-slate-200 shadow-md"> {/* Added shadow-md */}
-                  <CardContent className="pt-6">
-                    <div className="flex items-start space-x-6"> 
-                      <div className="flex-1">
-                        <div className="flex items-center justify-between mb-2"> 
-                          <h4 className="font-semibold text-white">{comment.authorFirstName} said:</h4>
-                          <span className="text-sm text-slate-400">{formatDate(comment.comment_created_at)}</span> {/* Decreased text size */}
-                        </div>
-                        {editingCommentId === comment.comment_id ? (
-                          <div className="flex flex-col space-y-2">
-                            <Textarea
-                              value={editText}
-                              onChange={(e) => setEditText(e.target.value)}
-                              className="resize-none min-h-20 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                            />
-                            <div className="flex justify-end space-x-2">
-                              <Button size="sm" onClick={() => handleSaveEdit(comment.comment_id)} disabled={isSubmitting}>
-                                Save
-                              </Button>
-                              <Button size="sm" variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
-                                Cancel
-                              </Button>
-                            </div>
-                          </div>
-                        ) : (
-                          <p className="text-slate-300 leading-relaxed">{comment.comment_text}</p>
-                        )}
-                      </div>
-                      {editingCommentId !== comment.comment_id && currentUser && comment.user_id === currentUser.user_id &&(
-                        <div className="flex flex-col space-y-2">
-                          <button
-                            onClick={() => handleEdit(comment)}
-                            className="text-slate-400 hover:text-blue-500 focus:outline-none"
-                            aria-label="Edit comment"
-                          >
-                            <Pencil className="h-5 w-5" />
-                          </button>
-                          <button
-                            onClick={() => handleDelete(comment.comment_id)}
-                            className="text-slate-400 hover:text-red-500 focus:outline-none"
-                            aria-label="Delete comment"
-                          >
-                            <Trash2 className="h-5 w-5" />
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-
-            {/* Comment Form */}
-            <Card className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg"> 
-              <CardHeader>
-                <CardTitle className="text-xl text-center text-white">Leave a Comment {!currentUser && "(must be logged in first)"}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleCommentSubmit} className="space-y-4">
-                  <Textarea
-                    placeholder="Share your thoughts..."
-                    value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)}
-                    className="resize-none min-h-36 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
-                    disabled={isSubmitting || isEditing || !currentUser}
-                  />
-                  <div className="flex justify-center">
-                    <Button
-                      type="submit"
-                      className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
-                      disabled={isSubmitting || isEditing || !currentUser}
-                    >
-                      {isSubmitting ? 'Posting...' : 'Post Comment'}
-                    </Button>
+          {postsLoading ? (
+            <Spinner />
+          ) : (<>
+            {/* Blog Post */}
+            <Card className="mb-8 w-full bg-slate-800 border-slate-700 text-slate-200 shadow-lg">
+              <CardHeader className="pb-0">
+                <CardTitle className="text-3xl font-bold text-white text-center">
+                  {post.title}
+                </CardTitle>
+                <CardDescription className="text-slate-400 flex items-center justify-center gap-4 mt-2 flex-wrap">
+                  <div className="flex items-center">
+                    <span>{post.authorFirstName + " " + post.authorLastName} </span>
                   </div>
-                </form>
+                  <div className="flex items-center">
+                    <Calendar className="h-4 w-4 mr-1" />
+                    <span>{formatDate(post.message_created_at)}</span>
+                  </div>
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="pt-6">
+
+                <div className="prose prose-invert max-w-none"
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.post_text) }}>
+                </div>
               </CardContent>
             </Card>
-          </div>
+
+            {/* Comments Section */}
+            <div className="mb-8 w-full ">
+              <h2 className="text-2xl font-bold mb-6 text-white text-center">Comments ({comments.length})</h2> {/* Increased mb-4 to mb-6 */}
+              <div className="space-y-6 mb-8">
+                {comments.map((comment) => (
+                  <Card key={comment.comment_id} className="bg-slate-800 border-slate-700 text-slate-200 shadow-md"> {/* Added shadow-md */}
+                    <CardContent className="pt-6">
+                      <div className="flex items-start space-x-6">
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold text-white">{comment.authorFirstName} said:</h4>
+                            <span className="text-sm text-slate-400">{formatDate(comment.comment_created_at)}</span> {/* Decreased text size */}
+                          </div>
+                          {editingCommentId === comment.comment_id ? (
+                            <div className="flex flex-col space-y-2">
+                              <Textarea
+                                value={editText}
+                                onChange={(e) => setEditText(e.target.value)}
+                                className="resize-none min-h-20 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
+                              />
+                              <div className="flex justify-end space-x-2">
+                                <Button size="sm" onClick={() => handleSaveEdit(comment.comment_id)} disabled={isSubmitting}>
+                                  Save
+                                </Button>
+                                <Button size="sm" variant="outline" onClick={handleCancelEdit} disabled={isSubmitting}>
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <p className="text-slate-300 leading-relaxed">{comment.comment_text}</p>
+                          )}
+                        </div>
+                        {editingCommentId !== comment.comment_id && currentUser && comment.user_id === currentUser.user_id && (
+                          <div className="flex flex-col space-y-2">
+                            <button
+                              onClick={() => handleEdit(comment)}
+                              className="text-slate-400 hover:text-blue-500 focus:outline-none"
+                              aria-label="Edit comment"
+                            >
+                              <Pencil className="h-5 w-5" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(comment.comment_id)}
+                              className="text-slate-400 hover:text-red-500 focus:outline-none"
+                              aria-label="Delete comment"
+                            >
+                              <Trash2 className="h-5 w-5" />
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Comment Form */}
+              <Card className="bg-slate-800 border-slate-700 text-slate-200 shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-xl text-center text-white">Leave a Comment {!currentUser && "(must be logged in first)"}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <form onSubmit={handleCommentSubmit} className="space-y-4">
+                    <Textarea
+                      placeholder="Share your thoughts..."
+                      value={newComment}
+                      onChange={(e) => setNewComment(e.target.value)}
+                      className="resize-none min-h-36 bg-slate-700 border-slate-600 text-slate-200 placeholder:text-slate-400"
+                      disabled={isSubmitting || isEditing || !currentUser}
+                    />
+                    <div className="flex justify-center">
+                      <Button
+                        type="submit"
+                        className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg"
+                        disabled={isSubmitting || isEditing || !currentUser}
+                      >
+                        {isSubmitting ? 'Posting...' : 'Post Comment'}
+                      </Button>
+                    </div>
+                  </form>
+                </CardContent>
+              </Card>
+            </div>
+          </>)}
         </div>
       </main>
 

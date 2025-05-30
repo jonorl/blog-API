@@ -113,7 +113,7 @@ const Index = () => {
               </a>
 
             </div>
-            <nav className="flex flex-wrap items-center gap-x-2 text-xs sm:text-sm md:text-base">
+            <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
               {userLoading ? (
                 <InlineSpinner />
               ) : currentUser ? (

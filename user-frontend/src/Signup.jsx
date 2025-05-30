@@ -118,10 +118,10 @@ const SignUp = () => {
                         <div className="flex items-center">
                             <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <BookOpen className="h-6 w-6 text-blue-400" />
-                                <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
+                                <span className="ml-2 text-xl font-bold text-white hidden md:inline">Blog API Project</span>
                             </a>
                         </div>
-                        <nav className="hidden md:flex space-x-8">
+                        <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
                             {currentUser ? (
                                 <>
                                     <span>Hello {currentUser.first_name}&nbsp; </span>
