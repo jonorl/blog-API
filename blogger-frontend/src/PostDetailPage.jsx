@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
+    ArrowLeft,
     Calendar,
     Trash2,
     Pencil,
@@ -41,6 +42,8 @@ const PostDetailPage = () => {
     const postTextRef = useRef({});
     const [textareaHeight, setTextareaHeight] = useState('auto');
     const [editingPostId, setEditingPostId] = useState(null);
+    const [postsLoading, setPostsLoading] = useState(true);
+    const [userLoading, setUserLoading] = useState(true);
 
     const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
 
@@ -88,6 +91,8 @@ const PostDetailPage = () => {
                 setIsAdmin(userData.user.roles !== "user");
             } catch (error) {
                 console.error("Error fetching current user:", error);
+            } finally {
+                setUserLoading(false);
             }
         };
 
@@ -153,6 +158,9 @@ const PostDetailPage = () => {
                 setComments(updatedComments);
             } catch (error) {
                 console.error('Error fetching data:', error);
+            } finally {
+                setPostsLoading(false);
+
             }
         };
 
@@ -375,23 +383,37 @@ const PostDetailPage = () => {
         }
     };
 
-    if (!post && currentUser) return <p>Loading...</p>;
+    const Spinner = () => (
+        <div className="flex justify-center items-center py-12">
+            <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+
+    const InlineSpinner = () => (
+        <div className="flex items-center justify-center">
+            <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
 
     return (
         <div className="min-h-screen bg-background text-foreground">
             <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-                <a href={`/`} className="text-3xl font-bold">Blogger Access</a>
-                <nav className="hidden md:flex space-x-8">
-                    {currentUser ? (
+                <a href={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</a>
+                <a href={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</a>
+
+                <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
+                    {userLoading ? (
+                        <InlineSpinner />
+                    ) : currentUser ? (
                         <>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center">
+                                <Label className={"text-center text-sm sm:text-base "} htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
                                 <Switch
                                     checked={isAdmin}
                                     onCheckedChange={handleMakeAdmin}
-                                    id={`admin-mode-${currentUser.user_id}`}
-                                    className="border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
+                                    id={`publish-mode-${currentUser.user_id}`}
+                                    className="mr-2 border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
                                 />
-                                <Label htmlFor={`admin-mode-${currentUser.user_id}`}>Make Admin?</Label>
                             </div>
                             <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <span>New Post&nbsp; </span>
@@ -419,7 +441,20 @@ const PostDetailPage = () => {
             </header>
 
             <main className="flex-grow container mx-auto px-4 py-8 max-w-4xl">
-                {!currentUser && (
+                <div className="mb-6 flex items-center">
+                    <Button
+                        variant="outline"
+                        onClick={() => navigate(-1)}
+                        className="flex items-center"
+                    >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Back
+                    </Button>
+                </div>
+
+                {postsLoading ? (
+                    <Spinner />
+                ) : !currentUser && (
                     <Card className="p-6 text-center mb-8">
                         <div className="flex items-center justify-center space-x-2">
                             <Info className="h-5 w-5" />
@@ -433,7 +468,9 @@ const PostDetailPage = () => {
                     </Card>
                 )}
 
-                {currentUser && currentUser.roles !== "blogger" && (
+                {postsLoading ? (
+                    <Spinner />
+                ) : currentUser && currentUser.roles !== "blogger" && (
                     <Card className="p-6 text-center mb-8">
                         <div className="flex items-center justify-center space-x-2">
                             <Info className="h-5 w-5" />
@@ -451,7 +488,9 @@ const PostDetailPage = () => {
                     </Card>
                 )}
 
-                {currentUser && (
+                {postsLoading ? (
+                    <Spinner />
+                ) : currentUser && (
                     <div className="flex flex-col">
                         <Card className="bg-card text-card-foreground flex flex-col gap-6 border shadow-sm p-6 hover:shadow-lg transition-shadow rounded-lg">
                             <CardHeader className="pb-0">

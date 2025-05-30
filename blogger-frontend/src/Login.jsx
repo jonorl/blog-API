@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { LogIn, Home } from "lucide-react";
+import { LogIn } from "lucide-react";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -49,12 +49,12 @@ const Login = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setErrors([]);
-    
+
     // Basic client-side validation
     const newErrors = [];
     if (!formData.email) newErrors.push({ msg: 'Email is required' });
     if (!formData.password) newErrors.push({ msg: 'Password is required' });
-    
+
     if (newErrors.length > 0) {
       setErrors(newErrors);
       setIsSubmitting(false);
@@ -93,12 +93,19 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-        <a href={`/`} className="text-3xl font-bold">Blogger Access</a>
+        <a href={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</a>
+        <a href={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</a>
+        <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
+          <a href="/login" className=" flex items-center">
+            <span>Login&nbsp; </span>
+            <LogIn className="h-4 w-4 mr-1" />
+          </a>
+        </nav>
       </header>
 
       <main className="max-w-md mx-auto p-6 space-y-6">
         <h1 className="text-2xl font-bold text-center mb-6">Login to Your Account</h1>
-        
+
         {errors.length > 0 && (
           <Alert variant="destructive" className="bg-red-100 dark:bg-red-900 border-red-200 dark:border-red-800">
             <AlertDescription>
@@ -141,8 +148,8 @@ const Login = () => {
               />
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               className="w-full"
               disabled={isSubmitting}
             >

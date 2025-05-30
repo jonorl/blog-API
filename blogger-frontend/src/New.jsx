@@ -32,6 +32,7 @@ const NewPostPage = () => {
     const [currentUser, setCurrentUser] = useState(null);
     const [isAdmin, setIsAdmin] = useState(false);
     const [bearerToken, setBearerToken] = useState('');
+    const [userLoading, setUserLoading] = useState(true);
     const editorRef = useRef(null);
 
     const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
@@ -60,7 +61,7 @@ const NewPostPage = () => {
                 setIsAdmin(userData.user.roles !== "user");
             } catch (error) {
                 console.error("Error fetching current user:", error);
-            }
+            } finally { setUserLoading(false); }
         };
 
         fetchCurrentUser();
@@ -162,21 +163,36 @@ const NewPostPage = () => {
         }
     };
 
+    const Spinner = () => (
+        <div className="flex justify-center items-center py-12">
+            <div className="h-10 w-10 border-4 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+
+    const InlineSpinner = () => (
+        <div className="flex items-center justify-center">
+            <div className="h-4 w-4 border-2 border-[#1f2937] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+    );
+
     return (
         <div className="min-h-screen bg-background text-foreground">
             <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-                <a href="/" className="text-3xl font-bold">Blogger Access</a>
-                <nav className="hidden md:flex space-x-8">
-                    {currentUser && (
+                <a href={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</a>
+                <a href={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</a>
+                <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
+                    {userLoading ? (
+                        <InlineSpinner />
+                    ) : currentUser && (
                         <>
-                            <div className="flex items-center space-x-2">
+                            <div className="flex items-center">
+                                <Label className={"text-center text-sm sm:text-base "} htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
                                 <Switch
                                     checked={isAdmin}
                                     onCheckedChange={handleMakeAdmin}
                                     id={`publish-mode-${currentUser.user_id}`}
-                                    className="border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
+                                    className="mr-2 border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
                                 />
-                                <Label htmlFor={`publish-mode-${currentUser.user_id}`}>Make Admin?</Label>
                             </div>
                             <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <span>New Post </span>
@@ -205,10 +221,14 @@ const NewPostPage = () => {
                         <ArrowLeft className="h-4 w-4 mr-2" />
                         Back
                     </Button>
+                </div>
+                <div className="mb-6 flex items-center">
                     <h1 className="text-3xl font-bold ml-4 text-white">Create New Post</h1>
                 </div>
 
-                {currentUser && currentUser.roles !== "blogger" && (
+                {userLoading ? (
+                    <Spinner />
+                ) : currentUser && currentUser.roles !== "blogger" && (
                     <Card className="p-6 text-center mb-6">
                         <div className="flex items-center justify-center space-x-2">
                             <Info className="h-5 w-5" />
