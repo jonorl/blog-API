@@ -96,7 +96,12 @@ async function deleteUser(userID) {
 }
 
 async function getAllPosts() {
-  const getPosts = await prisma.posts.findMany();
+  const getPosts = await prisma.posts.findMany({
+    orderBy: {
+      message_created_at: 'desc',
+    },
+  });
+  
   return getPosts;
 }
 
