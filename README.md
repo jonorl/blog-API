@@ -124,6 +124,10 @@ Server runs at: `http://localhost:3000`
 * Frontend: Netlify --> https://users-frontend.netlify.app/
 * Backend + PostgreSQL: Koyeb --> https://bold-corabella-jonorl-a167c351.koyeb.app/
 
+![App Screenshot](https://res.cloudinary.com/dqqdfeuo1/image/upload/v1748856782/45ae2821-3b6d-49e2-b35d-38cb5e8429e6.png "Screenshot of Blog App")
+
+
+
 ## 👨‍💻 Author
 
 **Jonathan Orlowski**
