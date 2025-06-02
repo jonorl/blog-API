@@ -126,7 +126,7 @@ const NewPostPage = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch('${host}api/v1/posts', {
+            const response = await fetch(`${host}api/v1/posts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
