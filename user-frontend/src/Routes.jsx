@@ -21,6 +21,6 @@ const router = createBrowserRouter([
         path: "/login",
         element: < Login />
     }
-]);
+], { basename });
 
 export default router;

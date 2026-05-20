@@ -4,8 +4,9 @@ import tailwindcss from '@tailwindcss/vite';
 import * as path from 'path';
 
 export default defineConfig({
+  base: './',
   build: {
-    outDir: 'dist', // Must match Nginx's root directory
+    outDir: 'dist',
     emptyOutDir: true,
   },
   // .
