@@ -4,8 +4,8 @@ import PostDetailPage from "./PostDetailPage";
 import New from "./New";
 import Login from "./Login.jsx"
 
-const hasSubfolder = window.location.pathname.startsWith("/blog");
-const basename = hasSubfolder ? "/blog" : "/";
+const hasSubfolder = window.location.pathname.startsWith("/blog-cms");
+const basename = hasSubfolder ? "/blog-cms" : "/";
 
 const router = createBrowserRouter([
     {
