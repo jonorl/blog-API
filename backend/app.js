@@ -23,7 +23,7 @@ const db = require("./db/queries");
 
 const jwtOptions = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-  secretOrKey: process.env.SECRET,
+  secretOrKey: process.env.SECRET_BLOG,
 };
 
 // Create JWT strategy
@@ -45,6 +45,6 @@ passport.use(jwtLogin);
 app.use(passport.initialize());
 
 // Launch and port confirmation
-app.listen(process.env.PORT, () =>
-  console.log(`Listeining on port ${process.env.PORT}`)
+app.listen(process.env.PORT_BLOG, () =>
+  console.log(`Listeining on port ${process.env.PORT_BLOG}`)
 );
