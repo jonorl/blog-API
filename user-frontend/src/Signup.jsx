@@ -16,8 +16,6 @@ import { BookOpen, Rss, LogIn, LogOut, UserRoundPlus } from 'lucide-react';
 const host = import.meta.env.VITE_HOST;
 const bloggersHost = import.meta.env.VITE_BLOGGERS_HOST
 
-const navigate = useNavigate();
-
 const SignUp = () => {
 
     // Hooks
@@ -25,6 +23,8 @@ const SignUp = () => {
     const [errors, setErrors] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [currentUser, setCurrentUser] = useState(null);
+
+    const navigate = useNavigate();
 
     // Fetch users
     useEffect(() => {
