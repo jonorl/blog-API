@@ -14,6 +14,7 @@ import { LogIn } from "lucide-react";
 
 // .env references
 const usersHost = import.meta.env.VITE_USERS_HOST;
+const HOST = import.meta.env.VITE_HOST;
 
 const Login = () => {
   
@@ -50,7 +51,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('https://bold-corabella-jonorl-a167c351.koyeb.app/api/v1/users/login', {
+      const response = await fetch(`${HOST}api/v1/users/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),

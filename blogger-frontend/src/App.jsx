@@ -11,8 +11,9 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Editor } from '@tinymce/tinymce-react';
 
-// Lucide React icons
-import { Trash2, Pencil, LogIn, LogOut, NotebookPen, Info } from "lucide-react";
+// Icons
+import { Trash2, Pencil, LogIn, LogOut, NotebookPen, Info, } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
 
 // Library to sanitize "dangerouslySetInnerHTML"
 import sanitizeHtml from 'sanitize-html';
@@ -580,8 +581,30 @@ const Index = () => {
         )}
       </main>
 
-      <footer className="max-w-5xl mx-auto p-6 border-t border-border text-center text-sm text-muted-foreground">
-        © 2025 Blogger CMS / Blog API. 8hqczgwx8@mozmail.com.
+      <footer
+        className="text-center mt-8  mb-8 text-sm text-gray-600"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+      >
+        <span className="text-gray-400">
+          © {new Date().getFullYear()}
+        </span>
+        <a
+          href="https://jonathan-orlowski.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-yellow-400 transition-colors"
+        >
+          Jonathan Orlowski
+        </a>
+        <a
+          href="https://github.com/jonorl/fugazzeta-frontend"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-white/80"
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
+          <FaGithub aria-label="GitHub" />
+        </a>
       </footer>
     </div>
   );

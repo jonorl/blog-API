@@ -5,8 +5,9 @@ import { useNavigate } from 'react-router-dom';
 // ShadCN/UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-// Lucide React icons
+// Icons
 import { BookOpen, LogIn, LogOut, Rss, UserRoundPlus } from 'lucide-react';
+import { FaGithub } from "react-icons/fa";
 
 // .env references
 const host = import.meta.env.VITE_HOST;
@@ -211,18 +212,30 @@ const Index = () => {
 
 
       {/* Footer */}
-      <footer className="bg-slate-800 shadow-inner mt-auto">
-        <div className="container mx-auto px-4 py-6 max-w-4xl">
-          <div className="flex flex-col items-center text-center">
-            <div className="flex items-center mb-4">
-              <BookOpen className="h-6 w-6 text-blue-400" />
-              <span className="ml-2 text-xl font-bold text-white">Blog API Project</span>
-            </div>
-            <div className="text-slate-400 text-sm">
-              © 2025 Blog API Project. 8hqczgwx8@mozmail.com
-            </div>
-          </div>
-        </div>
+      <footer
+        className="text-center mt-8 text-sm text-gray-600 mb-8"
+        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+      >
+        <span className="text-gray-400">
+          © {new Date().getFullYear()}
+        </span>
+        <a
+          href="https://jonathan-orlowski.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-gray-400 hover:text-yellow-400 transition-colors"
+        >
+          Jonathan Orlowski
+        </a>
+        <a
+          href="https://github.com/jonorl/fugazzeta-frontend"
+          target="_blank"
+          rel="noreferrer"
+          className="hover:text-white/80"
+          style={{ display: 'flex', alignItems: 'center' }}
+        >
+          <FaGithub aria-label="GitHub" />
+        </a>
       </footer>
     </div>
   );

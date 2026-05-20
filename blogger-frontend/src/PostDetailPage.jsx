@@ -30,7 +30,7 @@ const formatDate = (dateString) => {
 
 // .env references
 const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
-const host = import.meta.env.VITE_HOST;
+const HOST = import.meta.env.VITE_HOST;
 
 // Loading spinners
 
@@ -86,7 +86,7 @@ const PostDetailPage = () => {
                     return;
                 }
                 setBearerToken(token);
-                const response = await fetch(`${host}api/v1/usersverified/`, {
+                const response = await fetch(`${HOST}api/v1/usersverified/`, {
                     method: 'GET',
                     headers: { authorization: token },
                 });
@@ -113,8 +113,8 @@ const PostDetailPage = () => {
         const fetchPostAndUsers = async () => {
             try {
                 const headers = { Authorization: bearerToken };
-                const postResponse = await fetch(`${host}api/v1/posts/${id}`, { headers });
-                const commentsResponse = await fetch(`${host}api/v1/posts/${id}/comments`, { headers });
+                const postResponse = await fetch(`${HOST}api/v1/posts/${id}`, { headers });
+                const commentsResponse = await fetch(`${HOST}api/v1/posts/${id}/comments`, { headers });
 
                 if (!postResponse.ok || !commentsResponse.ok) {
                     throw new Error('Failed to fetch post or comments');
@@ -132,7 +132,7 @@ const PostDetailPage = () => {
                 ].filter((id, index, self) => id && self.indexOf(id) === index);
 
                 const userPromises = userIds.map((id) =>
-                    fetch(`${host}api/v1/users/${id}`, { headers }).then((res) => {
+                    fetch(`${HOST}api/v1/users/${id}`, { headers }).then((res) => {
                         if (!res.ok) {
                             console.warn(`Failed to fetch user ${id}: ${res.status}`);
                             return { user: { user_id: id, first_name: null } };
@@ -187,7 +187,7 @@ const PostDetailPage = () => {
             const newIsAdmin = !isAdmin;
             const newRole = newIsAdmin ? "blogger" : "user";
 
-            const response = await fetch(`${host}api/v1/users/${currentUser.user_id}/`, {
+            const response = await fetch(`${HOST}api/v1/users/${currentUser.user_id}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -221,7 +221,7 @@ const PostDetailPage = () => {
         if (editTitleText.trim() === '') return;
         setIsSubmitting(true);
         try {
-            const response = await fetch(`${host}api/v1/posts/${post.post_id}`, {
+            const response = await fetch(`${HOST}api/v1/posts/${post.post_id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -276,7 +276,7 @@ const PostDetailPage = () => {
         if (content.trim() === '') return;
         setIsSubmitting(true);
         try {
-            const response = await fetch(`${host}api/v1/posts/${postId}`, {
+            const response = await fetch(`${HOST}api/v1/posts/${postId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -310,7 +310,7 @@ const PostDetailPage = () => {
         if (editText.trim() === '') return;
         setIsSubmitting(true);
         try {
-            const response = await fetch(`${host}api/v1/comments/${commentId}`, {
+            const response = await fetch(`${HOST}api/v1/comments/${commentId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -353,7 +353,7 @@ const PostDetailPage = () => {
     const handleDeletePost = async (postId) => {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
-                const response = await fetch(`${host}api/v1/posts/${postId}`, {
+                const response = await fetch(`${HOST}api/v1/posts/${postId}`, {
                     method: 'DELETE',
                     headers: {
                         'authorization': bearerToken
@@ -374,7 +374,7 @@ const PostDetailPage = () => {
     const handleDelete = async (commentId) => {
         if (window.confirm('Are you sure you want to delete this comment?')) {
             try {
-                const response = await fetch(`${host}api/v1/comments/${commentId}`, {
+                const response = await fetch(`${HOST}api/v1/comments/${commentId}`, {
                     method: 'DELETE',
                     headers: {
                         'authorization': bearerToken

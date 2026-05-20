@@ -156,7 +156,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "/home/jonorl/Git/Odin/blog-API/backend/generated/prisma",
+      "value": "/home/jonorl/Git/blog-API/backend/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -170,12 +170,11 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/home/jonorl/Git/Odin/blog-API/backend/prisma/schema.prisma",
+    "sourceFilePath": "/home/jonorl/Git/blog-API/backend/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": null,
-    "schemaEnvPath": "../../.env"
+    "rootEnvPath": null
   },
   "relativePath": "../../prisma",
   "clientVersion": "6.7.0",
@@ -184,11 +183,12 @@ const config = {
     "db"
   ],
   "activeProvider": "postgresql",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
         "fromEnvVar": "DATABASE_URL",
-        "value": "postgres://koyeb-adm:npg_XtAzGOI69xiU@ep-steep-mud-a2xg238y.eu-central-1.pg.koyeb.app/koyebdb?sslmode=require&pgbouncer=true&connect_timeout=10"
+        "value": null
       }
     }
   },

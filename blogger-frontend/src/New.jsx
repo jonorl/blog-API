@@ -15,7 +15,7 @@ import { NotebookPen, LogOut, ArrowLeft, Save, Info } from "lucide-react";
 
 // .env references
 const apiKeyTinyMCE = import.meta.env.VITE_TINYMCE_API_KEY;
-const host = import.meta.env.VITE_HOST;
+const HOST = import.meta.env.VITE_HOST;
 
 // Loading spinners
 
@@ -60,7 +60,7 @@ const NewPostPage = () => {
                     return;
                 }
                 setBearerToken(token);
-                const response = await fetch(`${host}api/v1/usersverified/`, {
+                const response = await fetch(`${HOST}api/v1/usersverified/`, {
                     method: 'GET',
                     headers: { authorization: token },
                 });
@@ -85,7 +85,7 @@ const NewPostPage = () => {
             const newIsAdmin = !isAdmin;
             const newRole = newIsAdmin ? "blogger" : "user";
 
-            const response = await fetch(`${host}api/v1/users/${currentUser.user_id}/`, {
+            const response = await fetch(`${HOST}api/v1/users/${currentUser.user_id}/`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -126,7 +126,7 @@ const NewPostPage = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await fetch(`${host}api/v1/posts`, {
+            const response = await fetch(`${HOST}api/v1/posts`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
