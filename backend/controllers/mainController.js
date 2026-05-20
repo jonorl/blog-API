@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 // Create new token
 async function signToken(req, res, next) {
   const user = req.user;
-  req.token = await jwt.sign(user, process.env.SECRET, { expiresIn: '7d' });
+  req.token = await jwt.sign(user, process.env.SECRET_BLOG, { expiresIn: '7d' });
   next();
 }
 
@@ -16,7 +16,7 @@ function verifyToken(req, res, next) {
     const bearer = bearerHeader.split(' ');
     const bearerToken = bearer[1];
     req.token = bearerToken;
-    jwt.verify(req.token, process.env.SECRET, (err, authData) => {
+    jwt.verify(req.token, process.env.SECRET_BLOG, (err, authData) => {
       if (err) {
         console.log(err);
       } else {
