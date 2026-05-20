@@ -1,5 +1,6 @@
 // React import
 import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 // ShadCN/UI components
 
@@ -14,6 +15,8 @@ import { BookOpen, Rss, LogIn, LogOut, UserRoundPlus } from 'lucide-react';
 // .env references
 const host = import.meta.env.VITE_HOST;
 const bloggersHost = import.meta.env.VITE_BLOGGERS_HOST
+
+const navigate = useNavigate();
 
 const SignUp = () => {
 
@@ -102,7 +105,7 @@ const SignUp = () => {
                 } else {
                     console.error("No token received");
                 }
-                window.location.href = '/';
+                navigate('/');
             }
         }
 
@@ -121,38 +124,38 @@ const SignUp = () => {
                 <div className="container mx-auto px-4 max-w-4xl">
                     <div className="flex items-center justify-between h-16">
                         <div className="flex items-center">
-                            <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
+                            <Link to="/" className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <BookOpen className="h-6 w-6 text-blue-400" />
                                 <span className="ml-2 text-xl font-bold text-white hidden md:inline">Blog API Project</span>
-                            </a>
+                            </Link>
                         </div>
                         <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
                             {currentUser ? (
                                 <>
                                     <span>Hello {currentUser.first_name}&nbsp; </span>
 
-                                    <a href="#" className="text-slate-300 hover:text-blue-400 flex items-center">
+                                    <Link to="#" className="text-slate-300 hover:text-blue-400 flex items-center">
                                         <span>Logout </span>
                                         <LogOut className="h-4 w-4 mr-1" />
-                                    </a>
+                                    </Link>
                                 </>
                             ) : (
                                 <>
-                                    <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
+                                    <Link to="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
                                         <span>Sign up </span>
                                         <UserRoundPlus className="h-4 w-4 mr-1" />
-                                    </a>
-                                    <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
+                                    </Link>
+                                    <Link to="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
                                         <span>Login </span>
                                         <LogIn className="h-4 w-4 mr-1" />
-                                    </a>
+                                    </Link>
                                 </>
                             )}
 
-                            <a href={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
+                            <Link to={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <span>Blogger CMS access&nbsp;</span>
                                 <Rss className="h-4 w-4 mr-1" />
-                            </a>
+                            </Link>
                         </nav>
                     </div>
                 </div>

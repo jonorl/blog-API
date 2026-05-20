@@ -1,6 +1,6 @@
 // React import
 import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // ShadCN/UI components
 import { Input } from "@/components/ui/input"
@@ -350,8 +350,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-        <a href={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</a>
-        <a href={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</a>
+
+        <Link to="/" className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</Link>
+        <Link to="/" className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</Link>
+
         <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
           {userLoading ? (
             <InlineSpinner />
@@ -366,25 +368,25 @@ const Index = () => {
                   className="mr-2 border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
                 />
               </div>
-              <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <Link to="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>New Post&nbsp; </span>
                 <NotebookPen className="h-4 w-4 mr-1" />
-              </a>
-              <a href="/logout"
+              </Link>
+              <Link to="/logout"
                 onClick={(e) => {
                   e.preventDefault();
                   handleLogout();
                 }} className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Logout&nbsp; </span>
                 <LogOut className="h-4 w-4 mr-1" />
-              </a>
+              </Link>
             </>
           ) : (
             <>
-              <a href="/login" className=" flex items-center">
-                <span>Login&nbsp; </span>
+              <Link to="/login" className="flex items-center">
+                <span>Login&nbsp;</span>
                 <LogIn className="h-4 w-4 mr-1" />
-              </a>
+              </Link>
             </>
           )}
         </nav>
@@ -401,9 +403,9 @@ const Index = () => {
               <p className="font-medium">You must be logged in to view and manage blog posts</p>
             </div>
             <div className="mt-4">
-              <a href="/login" className="bg-white text-black py-2 px-4 rounded-md transition-colors">
+              <Link to="/login" className="bg-white text-black py-2 px-4 rounded-md transition-colors">
                 Log In Now
-              </a>
+              </Link>
             </div>
           </Card>
         )}
@@ -458,13 +460,13 @@ const Index = () => {
                   </div>
                 ) : (
                   <>
-                    <a
-                      href={`/posts/${post.post_id}`}
+                    <Link 
+                      to={`/posts/${post.post_id}`}
                       className="text-2xl font-semibold hover:underline"
                       ref={(el) => (postTitleRef.current[post.post_id] = el)}
                     >
                       {post.title}
-                    </a>
+                    </Link>
 
                     {post.author_id === currentUser.user_id && (
                       <div className="flex items-center space-x-2">

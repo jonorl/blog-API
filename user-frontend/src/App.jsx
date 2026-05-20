@@ -1,6 +1,6 @@
 // React import
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // ShadCN/UI components
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -121,12 +121,12 @@ const Index = () => {
         <div className="container mx-auto px-4 max-w-4xl">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center">
-              <a href="/" className="text-slate-300 hover:text-blue-400 flex items-center">
+              <Link to="/" className="text-slate-300 hover:text-blue-400 flex items-center">
                 <BookOpen className="h-6 w-6 text-blue-400" />
                 <span className="ml-2 text-xl font-bold text-white hidden md:inline">
                   Blog API Project
                 </span>
-              </a>
+              </Link>
 
             </div>
             <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
@@ -136,32 +136,32 @@ const Index = () => {
                 <>
                   <span>Hello {currentUser.first_name}&nbsp; </span>
 
-                  <a href="#"
+                  <Link to="#"
                     onClick={(e) => {
                       e.preventDefault();
                       handleLogout();
                     }} className="text-slate-300 hover:text-blue-400 flex items-center">
                     <span>Logout&nbsp; </span>
                     <LogOut className="h-4 w-4 mr-1" />
-                  </a>
+                  </Link>
                 </>
               ) : (
                 <>
-                  <a href="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
+                  <Link to="/signup" className="text-slate-300 hover:text-blue-400 flex items-center">
                     <span>Sign up </span>
                     <UserRoundPlus className="h-4 w-4 mr-1" />
-                  </a>
-                  <a href="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
+                  </Link>
+                  <Link to="/login" className="text-slate-300 hover:text-blue-400 flex items-center">
                     <span>Login&nbsp; </span>
                     <LogIn className="h-4 w-4 mr-1" />
-                  </a>
+                  </Link>
                 </>
               )}
 
-              <a href={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
+              <Link to={`${bloggersHost}`} className="text-slate-300 hover:text-blue-400 flex items-center">
                 <span>Blogger CMS access&nbsp;</span>
                 <Rss className="h-4 w-4 mr-1" />
-              </a>
+              </Link>
             </nav>
 
           </div>
@@ -185,12 +185,12 @@ const Index = () => {
                 >
                   <CardHeader className="pb-0">
                     <CardTitle className="text-2xl font-semibold text-white">
-                      <a
-                        href={`/posts/${post.post_id}`}
+                      <Link
+                        to={`/posts/${post.post_id}`}
                         className="hover:text-blue-400 transition-colors"
                       >
                         {post.title}
-                      </a>
+                      </Link>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="pt-4">
@@ -219,23 +219,23 @@ const Index = () => {
         <span className="text-gray-400">
           © {new Date().getFullYear()}
         </span>
-        <a
-          href="https://jonathan-orlowski.dev/"
+        <Link
+          to="https://jonathan-orlowski.dev/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-yellow-400 transition-colors"
         >
           Jonathan Orlowski
-        </a>
-        <a
-          href="https://github.com/jonorl/fugazzeta-frontend"
+        </Link>
+        <Link
+          to="https://github.com/jonorl/fugazzeta-frontend"
           target="_blank"
           rel="noreferrer"
           className="hover:text-white/80"
           style={{ display: 'flex', alignItems: 'center' }}
         >
           <FaGithub aria-label="GitHub" />
-        </a>
+        </Link>
       </footer>
     </div>
   );

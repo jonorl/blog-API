@@ -1,6 +1,6 @@
 // React import
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // ShadCN/UI components
 import { Input } from "@/components/ui/input";
@@ -82,13 +82,13 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-        <a href={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</a>
-        <a href={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</a>
+        <Link to={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</Link>
+        <Link to={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</Link>
         <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
-          <a href="/login" className=" flex items-center">
+          <Link to="/login" className=" flex items-center">
             <span>Login&nbsp; </span>
             <LogIn className="h-4 w-4 mr-1" />
-          </a>
+          </Link>
         </nav>
       </header>
 
@@ -162,9 +162,9 @@ const Login = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             Don't have an account?{' '}
-            <a href={`${usersHost}signup`} className="text-primary hover:underline">
+            <Link to={`${usersHost}signup`} className="text-primary hover:underline">
               Register here
-            </a>
+            </Link>
           </p>
         </div>
       </main>

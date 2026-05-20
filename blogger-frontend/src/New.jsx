@@ -1,6 +1,6 @@
 // React import
 import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 // ShadCN/UI components
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
@@ -157,8 +157,8 @@ const NewPostPage = () => {
     return (
         <div className="min-h-screen bg-background text-foreground">
             <header className="max-w-5xl mx-auto p-6 flex justify-between items-center border-b border-border">
-                <a href={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</a>
-                <a href={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</a>
+                <Link to={`/`} className="ml-2 text-xl font-bold text-white hidden md:inline sm:hidden">Blogger Access</Link>
+                <Link to={`/`} className="ml-2 text-xl font-bold text-white  lg:hidden md:hidden">BA</Link>
                 <nav className="flex space-x-2 text-xs sm:text-sm md:space-x-8 md:text-base px-2 sm:px-4">
                     {userLoading ? (
                         <InlineSpinner />
@@ -173,18 +173,18 @@ const NewPostPage = () => {
                                     className="mr-2 border-2 border-border [&>span]:bg-background [&>span]:shadow-md"
                                 />
                             </div>
-                            <a href="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
+                            <Link to="/new" className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <span>New Post </span>
                                 <NotebookPen className="h-4 w-4 mr-1" />
-                            </a>
-                            <a href="#"
+                            </Link>
+                            <Link to="#"
                                 onClick={(e) => {
                                     e.preventDefault();
                                     handleLogout();
                                 }} className="text-slate-300 hover:text-blue-400 flex items-center">
                                 <span>Logout </span>
                                 <LogOut className="h-4 w-4 mr-1" />
-                            </a>
+                            </Link>
                         </>
                     )}
                 </nav>
