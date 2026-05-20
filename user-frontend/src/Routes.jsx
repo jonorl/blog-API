@@ -4,8 +4,8 @@ import PostDetailPage from "./PostDetailPage";
 import Signup from "./Signup"
 import Login from "./Login"
 
-const hasSubfolder = window.location.pathname.startsWith("/messaging-app");
-const basename = hasSubfolder ? "/messaging-app" : "/";
+const hasSubfolder = window.location.pathname.startsWith("/blog");
+const basename = hasSubfolder ? "/blog" : "/";
 
 const router = createBrowserRouter([
     {
