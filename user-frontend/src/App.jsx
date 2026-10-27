@@ -228,7 +228,7 @@ const Index = () => {
           Jonathan Orlowski
         </Link>
         <Link
-          to="https://github.com/jonorl/fugazzeta-frontend"
+          to="https://github.com/jonorl/fugazzeta"
           target="_blank"
           rel="noreferrer"
           className="hover:text-white/80"

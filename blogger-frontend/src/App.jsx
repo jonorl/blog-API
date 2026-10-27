@@ -599,7 +599,7 @@ const Index = () => {
           Jonathan Orlowski
         </a>
         <a
-          href="https://github.com/jonorl/fugazzeta-frontend"
+          href="https://github.com/jonorl/fugazzeta"
           target="_blank"
           rel="noreferrer"
           className="hover:text-white/80"
